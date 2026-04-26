@@ -25,7 +25,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .hero{margin-bottom:22px}
 .hero-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p800);background:var(--p50);border:0.5px solid var(--bdr2);border-radius:100px;padding:4px 12px;margin-bottom:10px}
 .hero-title{font-size:24px;font-weight:600;letter-spacing:-.4px;color:var(--ink);line-height:1.25;margin-bottom:6px}
-.hero-sub{font-size:13px;color:var(--ink3);line-height:1.65}
 .card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
 .card-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
 .qb{margin-bottom:18px}
@@ -120,18 +119,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="qt">Berapa lama interaksi berlangsung?</div>
       <div class="opts" id="og-dur">
         <div class="opt" data-v="0.5" onclick="po(this,'og-dur')">Kurang dari 1 jam</div>
-        <div class="opt" data-v="2"   onclick="po(this,'og-dur')">1-3 jam</div>
-        <div class="opt" data-v="4.5" onclick="po(this,'og-dur')">3-6 jam</div>
+        <div class="opt" data-v="2"   onclick="po(this,'og-dur')">1–3 jam</div>
+        <div class="opt" data-v="4.5" onclick="po(this,'og-dur')">3–6 jam</div>
         <div class="opt" data-v="8"   onclick="po(this,'og-dur')">Lebih dari 6 jam</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Tipe interaksi yang baru terjadi?</div>
+      <div class="qs">Online lebih ringan, bertemu orang baru / publik lebih menguras energi.</div>
+      <div class="opts" id="og-tipe">
+        <div class="opt" data-v="0"  onclick="po(this,'og-tipe')">Online / virtual</div>
+        <div class="opt" data-v="5"  onclick="po(this,'og-tipe')">Tatap muka — orang dikenal</div>
+        <div class="opt" data-v="10" onclick="po(this,'og-tipe')">Publik / orang baru</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Kondisi lingkungan selama interaksi?</div>
+      <div class="qs">Kebisingan dan keramaian memperparah kelelahan sosial.</div>
+      <div class="opts" id="og-bising">
+        <div class="opt" data-v="1"  onclick="po(this,'og-bising')">Tenang / sepi</div>
+        <div class="opt" data-v="5"  onclick="po(this,'og-bising')">Cukup ramai</div>
+        <div class="opt" data-v="9"  onclick="po(this,'og-bising')">Sangat bising / ramai</div>
       </div>
     </div>
 
     <div class="qb">
       <div class="qt">Mood kamu sebelum interaksi tadi?</div>
       <div class="opts" id="og-mood">
-        <div class="opt" data-v="2"  onclick="po(this,'og-mood')">Sudah tidak mood sama sekali</div>
-        <div class="opt" data-v="5"  onclick="po(this,'og-mood')">Netral / biasa saja</div>
-        <div class="opt" data-v="8"  onclick="po(this,'og-mood')">Mood cukup baik</div>
+        <div class="opt" data-v="2" onclick="po(this,'og-mood')">Sudah tidak mood sama sekali</div>
+        <div class="opt" data-v="5" onclick="po(this,'og-mood')">Netral / biasa saja</div>
+        <div class="opt" data-v="8" onclick="po(this,'og-mood')">Mood cukup baik</div>
       </div>
     </div>
 
@@ -139,8 +158,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="qt">Berapa jam tidur semalam?</div>
       <div class="opts" id="og-slp">
         <div class="opt" data-v="3"   onclick="po(this,'og-slp')">Kurang dari 5 jam</div>
-        <div class="opt" data-v="5.5" onclick="po(this,'og-slp')">5-6 jam</div>
-        <div class="opt" data-v="7.5" onclick="po(this,'og-slp')">7-8 jam</div>
+        <div class="opt" data-v="5.5" onclick="po(this,'og-slp')">5–6 jam</div>
+        <div class="opt" data-v="7.5" onclick="po(this,'og-slp')">7–8 jam</div>
         <div class="opt" data-v="9"   onclick="po(this,'og-slp')">Lebih dari 8 jam</div>
       </div>
     </div>
@@ -204,9 +223,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="qt">Kondisi umum kulit wajahmu?</div>
       <div class="skin-grid" id="og-main">
         <div class="sopt" data-v="oily"   onclick="pso(this,'og-main')"><div class="sopt-t">Berminyak</div><div class="sopt-s">Wajah sering terasa licin, pori terlihat besar</div></div>
-        <div class="sopt" data-v="dry"    onclick="pso(this,'og-main')"><div class="sopt-t">Kering</div><div class="sopt-s">Kusam, kadang mengelupas</div></div>
+        <div class="sopt" data-v="dry"    onclick="pso(this,'og-main')"><div class="sopt-t">Kering</div><div class="sopt-s">Terasa ketarik, kusam, kadang mengelupas</div></div>
         <div class="sopt" data-v="combo"  onclick="pso(this,'og-main')"><div class="sopt-t">Kombinasi</div><div class="sopt-s">T-zone berminyak, pipi normal atau kering</div></div>
-        <div class="sopt" data-v="normal" onclick="pso(this,'og-main')"><div class="sopt-t">Normal</div><div class="sopt-s">Seimbang</div></div>
+        <div class="sopt" data-v="normal" onclick="pso(this,'og-main')"><div class="sopt-t">Normal</div><div class="sopt-s">Seimbang, tidak ekstrem ke mana-mana</div></div>
       </div>
     </div>
 
@@ -221,12 +240,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       </div>
     </div>
 
-    <div class="qb" style="margin-bottom:0">
+    <div class="qb">
       <div class="qt">Reaksi kulit saat coba produk baru?</div>
       <div class="opts" id="og-rxn">
         <div class="opt" data-v="stable"   onclick="po(this,'og-rxn')">Biasanya aman</div>
         <div class="opt" data-v="breakout" onclick="po(this,'og-rxn')">Sering breakout</div>
         <div class="opt" data-v="irritate" onclick="po(this,'og-rxn')">Sering merah / iritasi</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Kondisi lingkungan / iklim sehari-hari?</div>
+      <div class="qs">Iklim mempengaruhi kebutuhan hidrasi dan kontrol minyak.</div>
+      <div class="opts" id="og-env">
+        <div class="opt" data-v="humid"  onclick="po(this,'og-env')">Panas & lembap (tropis)</div>
+        <div class="opt" data-v="dry"    onclick="po(this,'og-env')">Kering / ber-AC terus</div>
+        <div class="opt" data-v="normal" onclick="po(this,'og-env')">Sedang / normal</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Riwayat alergi terhadap bahan skincare?</div>
+      <div class="opts" id="og-alg">
+        <div class="opt" data-v="none"     onclick="po(this,'og-alg')">Tidak ada</div>
+        <div class="opt" data-v="fragrance" onclick="po(this,'og-alg')">Fragrance / parfum</div>
+        <div class="opt" data-v="paraben"  onclick="po(this,'og-alg')">Paraben</div>
+        <div class="opt" data-v="both"     onclick="po(this,'og-alg')">Keduanya</div>
+      </div>
+    </div>
+
+    <div class="qb" style="margin-bottom:0">
+      <div class="qt">Rentang usia kulitmu?</div>
+      <div class="qs">Usia mempengaruhi kebutuhan aktif dan agresivitas treatment.</div>
+      <div class="opts" id="og-age">
+        <div class="opt" data-v="young"  onclick="po(this,'og-age')">Di bawah 25 tahun</div>
+        <div class="opt" data-v="adult"  onclick="po(this,'og-age')">25–35 tahun</div>
+        <div class="opt" data-v="mature" onclick="po(this,'og-age')">Di atas 35 tahun</div>
       </div>
     </div>
   </div>
@@ -261,15 +310,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 </div>
 
 <script>
-// ── Tab switching ───────────────────────────────────────────────
 function goTab(t,b){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('on'));
   document.getElementById('p-'+t).classList.add('on');
   b.classList.add('on');
 }
-
-// ── Option selectors ────────────────────────────────────────────
 function po(el,gid){
   document.querySelectorAll('#'+gid+' .opt').forEach(o=>o.classList.remove('on'));
   el.classList.add('on');
@@ -280,24 +326,19 @@ function pso(el,gid){
   el.classList.add('on');
   checkReady();
 }
-function gv(gid){
-  var e=document.querySelector('#'+gid+' .on');
-  return e?e.dataset.v:null;
-}
+function gv(gid){var e=document.querySelector('#'+gid+' .on');return e?e.dataset.v:null;}
 
-// ── Scale (kelelahan) — tidak ada default ───────────────────────
-var scFat = null;
+// Scale kelelahan — tidak ada default
+var scFat=null;
 (function(){
-  var wrap = document.getElementById('sc-fat');
+  var wrap=document.getElementById('sc-fat');
   for(var i=1;i<=10;i++){
     (function(v){
-      var d = document.createElement('div');
-      d.className = 'sdot';
-      d.textContent = v;
-      d.onclick = function(){
-        scFat = v;
+      var d=document.createElement('div');d.className='sdot';d.textContent=v;
+      d.onclick=function(){
+        scFat=v;
         wrap.querySelectorAll('.sdot').forEach(function(x,xi){
-          x.className = 'sdot'+(xi+1 < v ? ' half' : xi+1 === v ? ' on' : '');
+          x.className='sdot'+(xi+1<v?' half':xi+1===v?' on':'');
         });
         checkReady();
       };
@@ -306,118 +347,98 @@ var scFat = null;
   }
 })();
 
-// ── Validasi: semua pertanyaan harus dijawab ────────────────────
 function checkReady(){
-  // Battery: kelelahan scale + 4 option groups
-  var batReady = scFat !== null &&
-    gv('og-dur') && gv('og-mood') && gv('og-slp') && gv('og-int');
-  var btnBat = document.getElementById('btn-bat');
-  var hintBat = document.getElementById('hint-bat');
-  btnBat.disabled = !batReady;
-  hintBat.style.display = batReady ? 'none' : 'block';
+  // Battery: scale + 6 grup
+  var batOk = scFat!==null && gv('og-dur') && gv('og-tipe') && gv('og-bising') &&
+              gv('og-mood') && gv('og-slp') && gv('og-int');
+  document.getElementById('btn-bat').disabled=!batOk;
+  document.getElementById('hint-bat').style.display=batOk?'none':'block';
 
-  // Skin: 3 option groups
-  var skinReady = gv('og-main') && gv('og-con') && gv('og-rxn');
-  var btnSkin = document.getElementById('btn-skin');
-  var hintSkin = document.getElementById('hint-skin');
-  btnSkin.disabled = !skinReady;
-  hintSkin.style.display = skinReady ? 'none' : 'block';
+  // Skin: 6 grup
+  var skinOk = gv('og-main') && gv('og-con') && gv('og-rxn') &&
+               gv('og-env') && gv('og-alg') && gv('og-age');
+  document.getElementById('btn-skin').disabled=!skinOk;
+  document.getElementById('hint-skin').style.display=skinOk?'none':'block';
 }
 
-// ── API calls ───────────────────────────────────────────────────
 async function runBattery(){
-  var btn = document.getElementById('btn-bat');
-  btn.disabled = true;
-  document.getElementById('load-bat').style.display = 'block';
-  document.getElementById('out-bat').style.display = 'none';
-
+  var btn=document.getElementById('btn-bat');
+  btn.disabled=true;
+  document.getElementById('load-bat').style.display='block';
+  document.getElementById('out-bat').style.display='none';
   try{
-    var res = await fetch('/api/social-battery',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+    var res=await fetch('/api/social-battery',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         kelelahan: scFat,
         durasi:    parseFloat(gv('og-dur')),
+        tipe:      parseFloat(gv('og-tipe')),
+        kebisingan:parseFloat(gv('og-bising')),
         mood:      parseFloat(gv('og-mood')),
         tidur:     parseFloat(gv('og-slp')),
-        introvert: parseFloat(gv('og-int'))
+        introvert: parseFloat(gv('og-int')),
       })
     });
-    var d = await res.json();
-    if(d.status !== 'ok') throw new Error(d.message);
+    var d=await res.json();
+    if(d.status!=='ok')throw new Error(d.message);
 
-    document.getElementById('r-num').textContent = d.hours%1===0 ? d.hours : d.hours.toFixed(1);
-    document.getElementById('r-badge').textContent = d.badge;
-    document.getElementById('g-pct').textContent = d.energy+'%';
-    var offset = (233-(d.energy/100*233)).toFixed(1);
-    document.getElementById('g-arc').setAttribute('stroke-dashoffset', offset);
-
-    document.getElementById('r-interp').innerHTML = d.interps.map(function(t){
-      return '<div class="iitem"><div class="idot"></div><div class="itext">'+t+'</div></div>';
+    document.getElementById('r-num').textContent=d.hours%1===0?d.hours:d.hours.toFixed(1);
+    document.getElementById('r-badge').textContent=d.badge;
+    document.getElementById('g-pct').textContent=d.energy+'%';
+    document.getElementById('g-arc').setAttribute('stroke-dashoffset',(233-(d.energy/100*233)).toFixed(1));
+    document.getElementById('r-interp').innerHTML=d.interps.map(function(t){
+      return'<div class="iitem"><div class="idot"></div><div class="itext">'+t+'</div></div>';
     }).join('');
-    document.getElementById('r-do').innerHTML = d.dos.map(function(x,i){
-      return '<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
+    document.getElementById('r-do').innerHTML=d.dos.map(function(x,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
     }).join('');
-    document.getElementById('r-dont').innerHTML = d.donts.map(function(x,i){
-      return '<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
+    document.getElementById('r-dont').innerHTML=d.donts.map(function(x,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
     }).join('');
-
-    document.getElementById('out-bat').style.display = 'block';
-    setTimeout(function(){
-      document.getElementById('out-bat').scrollIntoView({behavior:'smooth',block:'nearest'});
-    },50);
-  }catch(e){
-    alert('Error: '+e.message);
-  }finally{
-    btn.disabled = false;
-    document.getElementById('load-bat').style.display = 'none';
-  }
+    document.getElementById('out-bat').style.display='block';
+    setTimeout(function(){document.getElementById('out-bat').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  }catch(e){alert('Error: '+e.message);}
+  finally{btn.disabled=false;document.getElementById('load-bat').style.display='none';}
 }
 
 async function runSkin(){
-  var btn = document.getElementById('btn-skin');
-  btn.disabled = true;
-  document.getElementById('load-skin').style.display = 'block';
-  document.getElementById('out-skin').style.display = 'none';
-
+  var btn=document.getElementById('btn-skin');
+  btn.disabled=true;
+  document.getElementById('load-skin').style.display='block';
+  document.getElementById('out-skin').style.display='none';
   try{
-    var res = await fetch('/api/skincare',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+    var res=await fetch('/api/skincare',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        main:     gv('og-main'),
-        concern:  gv('og-con'),
-        reaction: gv('og-rxn')
+        main:        gv('og-main'),
+        concern:     gv('og-con'),
+        reaction:    gv('og-rxn'),
+        environment: gv('og-env'),
+        allergy:     gv('og-alg'),
+        age_group:   gv('og-age'),
       })
     });
-    var d = await res.json();
-    if(d.status !== 'ok') throw new Error(d.message);
+    var d=await res.json();
+    if(d.status!=='ok')throw new Error(d.message);
 
-    document.getElementById('sk-type').textContent = d.type;
-    document.getElementById('sk-desc').textContent = d.desc;
-    document.getElementById('sk-am').innerHTML = d.morning.map(function(s,i){
-      return '<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
+    document.getElementById('sk-type').textContent=d.type;
+    document.getElementById('sk-desc').textContent=d.desc;
+    document.getElementById('sk-am').innerHTML=d.morning.map(function(s,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
     }).join('');
-    document.getElementById('sk-pm').innerHTML = d.evening.map(function(s,i){
-      return '<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
+    document.getElementById('sk-pm').innerHTML=d.evening.map(function(s,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
     }).join('');
-    document.getElementById('sk-ingr').innerHTML = d.ingredients.map(function(x){
-      return '<span class="tg tg-g">'+x+'</span>';
+    document.getElementById('sk-ingr').innerHTML=d.ingredients.map(function(x){
+      return'<span class="tg tg-g">'+x+'</span>';
     }).join('');
-    document.getElementById('sk-avoid').innerHTML = d.avoid.map(function(x){
-      return '<span class="tg tg-r">'+x+'</span>';
+    document.getElementById('sk-avoid').innerHTML=d.avoid.map(function(x){
+      return'<span class="tg tg-r">'+x+'</span>';
     }).join('');
-
-    document.getElementById('out-skin').style.display = 'block';
-    setTimeout(function(){
-      document.getElementById('out-skin').scrollIntoView({behavior:'smooth',block:'nearest'});
-    },50);
-  }catch(e){
-    alert('Error: '+e.message);
-  }finally{
-    btn.disabled = false;
-    document.getElementById('load-skin').style.display = 'none';
-  }
+    document.getElementById('out-skin').style.display='block';
+    setTimeout(function(){document.getElementById('out-skin').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  }catch(e){alert('Error: '+e.message);}
+  finally{btn.disabled=false;document.getElementById('load-skin').style.display='none';}
 }
 </script>
 </body>
