@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResponsiKB</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{
+  --p50:#FBEAF0;--p100:#F4C0D1;--p200:#ED93B1;--p400:#D4537E;--p600:#993556;--p800:#72243E;
+  --ink:#1a1a2e;--ink2:#52526a;--ink3:#9898b0;
+  --white:#fff;--bdr:rgba(212,83,126,0.15);--bdr2:rgba(212,83,126,0.28);
+  --r:14px;--rlg:20px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;background:var(--white);color:var(--ink);min-height:100vh}
+.app{max-width:620px;margin:0 auto;padding:0 0 60px}
+.topbar{padding:24px 20px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.wordmark{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.seg{display:flex;background:var(--p50);border-radius:12px;padding:3px;gap:2px;border:0.5px solid var(--bdr)}
+.seg-btn{padding:7px 20px;border-radius:9px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--p600);transition:all .2s;white-space:nowrap}
+.seg-btn.on{background:var(--p400);color:#fff}
+.panel{display:none;padding:0 20px;animation:up .22s ease}
+.panel.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.hero{margin-bottom:22px}
+.hero-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p800);background:var(--p50);border:0.5px solid var(--bdr2);border-radius:100px;padding:4px 12px;margin-bottom:10px}
+.hero-title{font-size:24px;font-weight:600;letter-spacing:-.4px;color:var(--ink);line-height:1.25;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--ink3);line-height:1.65}
+.card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
+.card-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+.qb{margin-bottom:18px}
+.qb:last-child{margin-bottom:0}
+.qt{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.qs{font-size:12px;color:var(--ink3);margin-bottom:8px;line-height:1.55}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{padding:7px 15px;border-radius:100px;border:0.5px solid var(--bdr);background:var(--white);color:var(--ink2);font-size:13px;cursor:pointer;transition:all .18s}
+.opt:hover{border-color:var(--p200);color:var(--p800)}
+.opt.on{background:var(--p50);border-color:var(--p400);color:var(--p800);font-weight:500}
+.scale-wrap{display:flex;flex-direction:column;gap:6px}
+.scale-track{display:flex;gap:4px}
+.sdot{flex:1;height:34px;border-radius:8px;border:0.5px solid var(--bdr);background:var(--white);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink3)}
+.sdot:hover{border-color:var(--p200);color:var(--p800)}
+.sdot.on{background:var(--p400);border-color:var(--p400);color:#fff;font-weight:600}
+.sdot.half{background:var(--p50);border-color:var(--p100);color:var(--p800)}
+.scale-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3)}
+.skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sopt{padding:10px 12px;border-radius:var(--r);border:0.5px solid var(--bdr);background:var(--white);cursor:pointer;transition:all .18s}
+.sopt:hover{border-color:var(--p200)}
+.sopt.on{background:var(--p50);border-color:var(--p400)}
+.sopt-t{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.sopt.on .sopt-t{color:var(--p800)}
+.sopt-s{font-size:11px;color:var(--ink3);line-height:1.4}
+.btn-run{width:100%;padding:14px;border:none;border-radius:var(--r);background:var(--p400);color:#fff;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:6px}
+.btn-run:hover{background:var(--p600)}
+.btn-run:active{transform:scale(.98)}
+.btn-run:disabled{opacity:.6;cursor:not-allowed}
+.loading{text-align:center;padding:24px;color:var(--ink3);font-size:13px;display:none}
+.spinner{width:24px;height:24px;border:2px solid var(--p100);border-top-color:var(--p400);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result{margin-top:16px;animation:up .28s ease}
+.res-top{background:var(--p50);border:0.5px solid var(--bdr2);border-radius:var(--rlg);padding:24px 20px;text-align:center;margin-bottom:10px}
+.res-tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p600);margin-bottom:10px}
+.res-big{font-size:52px;font-weight:700;letter-spacing:-2px;color:var(--ink);line-height:1}
+.res-unit{font-size:13px;color:var(--ink3);margin-top:3px;margin-bottom:14px}
+.res-badge{display:inline-block;padding:5px 16px;border-radius:100px;background:var(--p400);color:#fff;font-size:12px;font-weight:500;margin-bottom:16px}
+.gauge-note{font-size:11px;color:var(--ink3);margin-top:4px}
+.interp-card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
+.sec-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
+.iitem{display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--bdr)}
+.iitem:last-child{border-bottom:none;padding-bottom:0}
+.idot{width:5px;height:5px;border-radius:50%;background:var(--p400);margin-top:7px;flex-shrink:0}
+.itext{font-size:13px;color:var(--ink2);line-height:1.55}
+.reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.reco-card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--r);padding:14px}
+.rlist{list-style:none;display:flex;flex-direction:column;gap:6px}
+.rlist li{font-size:12px;color:var(--ink2);line-height:1.45;display:flex;gap:7px;align-items:flex-start}
+.rnum{font-size:10px;font-weight:600;color:var(--p400);min-width:13px;margin-top:2px}
+.sk-top{background:var(--p50);border:0.5px solid var(--bdr2);border-radius:var(--rlg);padding:22px 20px;margin-bottom:10px;text-align:center}
+.sk-name{font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-.3px;margin-bottom:6px}
+.sk-desc{font-size:13px;color:var(--ink2);line-height:1.6;max-width:400px;margin:0 auto}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tg{padding:4px 11px;border-radius:100px;font-size:11px;font-weight:500}
+.tg-g{background:#edf7ed;color:#2a5e2a;border:0.5px solid #b6d8b6}
+.tg-r{background:#fef0f0;color:#8e2a2a;border:0.5px solid #f0bcbc}
+@media(max-width:480px){.reco-grid{grid-template-columns:1fr}.skin-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="topbar">
+  <span class="wordmark">ResponsiKB</span>
+  <div class="seg">
+    <button class="seg-btn on" onclick="goTab('battery',this)">Social Battery</button>
+    <button class="seg-btn" onclick="goTab('skin',this)">Skincare</button>
+  </div>
+</div>
+
+<!-- ══ SOCIAL BATTERY PANEL ══ -->
+<div id="p-battery" class="panel on">
+  <div class="hero">
+    <div class="hero-tag">Sistem Fuzzy Logic — scikit-fuzzy</div>
+    <div class="hero-title">Social Battery Manager</div>
+    <div class="hero-sub">Ukur sisa energi sosialmu menggunakan Mamdani FIS dengan 5 variabel input dan 25 rule base.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Input variabel fuzzy</div>
+
+    <div class="qb">
+      <div class="qt">Seberapa lelah secara sosial kamu sekarang?</div>
+      <div class="qs">Bukan lelah fisik — tapi rasa ingin sendirian dan tidak berinteraksi.</div>
+      <div class="scale-wrap">
+        <div class="scale-track" id="sc-fat"></div>
+        <div class="scale-ends"><span>Masih segar (0)</span><span>Kelelahan berat (10)</span></div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Berapa lama interaksi berlangsung?</div>
+      <div class="opts" id="og-dur">
+        <div class="opt on" data-v="0.5" onclick="po(this,'og-dur')">Kurang dari 1 jam</div>
+        <div class="opt" data-v="2"   onclick="po(this,'og-dur')">1–3 jam</div>
+        <div class="opt" data-v="4.5" onclick="po(this,'og-dur')">3–6 jam</div>
+        <div class="opt" data-v="8"   onclick="po(this,'og-dur')">Lebih dari 6 jam</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Mood kamu sebelum interaksi tadi?</div>
+      <div class="opts" id="og-mood">
+        <div class="opt" data-v="2"  onclick="po(this,'og-mood')">Sudah tidak mood sama sekali</div>
+        <div class="opt on" data-v="5"  onclick="po(this,'og-mood')">Netral / biasa saja</div>
+        <div class="opt" data-v="8"  onclick="po(this,'og-mood')">Mood cukup baik</div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Berapa jam tidur semalam?</div>
+      <div class="opts" id="og-slp">
+        <div class="opt" data-v="3"  onclick="po(this,'og-slp')">Kurang dari 5 jam</div>
+        <div class="opt" data-v="5.5" onclick="po(this,'og-slp')">5–6 jam</div>
+        <div class="opt on" data-v="7.5" onclick="po(this,'og-slp')">7–8 jam</div>
+        <div class="opt" data-v="9"  onclick="po(this,'og-slp')">Lebih dari 8 jam</div>
+      </div>
+    </div>
+
+    <div class="qb" style="margin-bottom:0">
+      <div class="qt">Kamu termasuk tipe apa?</div>
+      <div class="qs">Introvert lebih cepat terkuras dalam interaksi yang sama — ini memengaruhi membership function introvert_lvl.</div>
+      <div class="opts" id="og-int">
+        <div class="opt on" data-v="9" onclick="po(this,'og-int')">Introvert</div>
+        <div class="opt" data-v="5"   onclick="po(this,'og-int')">Ambivert</div>
+        <div class="opt" data-v="1"   onclick="po(this,'og-int')">Ekstrovert</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-run" id="btn-bat" onclick="runBattery()">Jalankan inferensi fuzzy</button>
+  <div class="loading" id="load-bat"><div class="spinner"></div>Memproses FIS di server...</div>
+
+  <div id="out-bat" class="result" style="display:none">
+    <div class="res-top">
+      <div class="res-tag">Output FIS — defuzzifikasi centroid</div>
+      <div class="res-big" id="r-num">—</div>
+      <div class="res-unit">jam recovery yang direkomendasikan</div>
+      <div class="res-badge" id="r-badge">—</div>
+      <svg width="180" height="96" viewBox="0 0 180 96" fill="none" style="display:block;margin:12px auto 0">
+        <path d="M16 88 A74 74 0 0 1 164 88" stroke="#F4C0D1" stroke-width="9" stroke-linecap="round"/>
+        <path id="g-arc" d="M16 88 A74 74 0 0 1 164 88" stroke="#D4537E" stroke-width="9" stroke-linecap="round" stroke-dasharray="233" stroke-dashoffset="233"/>
+        <text id="g-pct" x="90" y="80" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a2e">—</text>
+      </svg>
+      <div class="gauge-note">estimasi energi sosial tersisa</div>
+    </div>
+
+    <div class="interp-card">
+      <div class="sec-head">Interpretasi output</div>
+      <div id="r-interp"></div>
+    </div>
+
+    <div class="reco-grid">
+      <div class="reco-card">
+        <div class="sec-head">Lakukan sekarang</div>
+        <ul class="rlist" id="r-do"></ul>
+      </div>
+      <div class="reco-card">
+        <div class="sec-head">Tunda dulu</div>
+        <ul class="rlist" id="r-dont"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SKINCARE PANEL ══ -->
+<div id="p-skin" class="panel">
+  <div class="hero">
+    <div class="hero-tag">Sistem Pakar — Forward-chaining</div>
+    <div class="hero-title">Identifikasi Jenis Kulit & Skincare</div>
+    <div class="hero-sub">Rule-based expert system dengan 9 node kesimpulan — dievaluasi secara berurutan dari kondisi paling spesifik ke umum.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Pilih kondisi yang paling sesuai</div>
+
+    <div class="qb">
+      <div class="qt">Kondisi umum kulit wajahmu?</div>
+      <div class="skin-grid" id="og-main">
+        <div class="sopt on" data-v="oily" onclick="pso(this,'og-main')"><div class="sopt-t">Berminyak</div><div class="sopt-s">Wajah sering terasa licin, pori terlihat besar</div></div>
+        <div class="sopt" data-v="dry"   onclick="pso(this,'og-main')"><div class="sopt-t">Kering</div><div class="sopt-s">Terasa ketarik, kusam, kadang mengelupas</div></div>
+        <div class="sopt" data-v="combo" onclick="pso(this,'og-main')"><div class="sopt-t">Kombinasi</div><div class="sopt-s">T-zone berminyak, pipi normal atau kering</div></div>
+        <div class="sopt" data-v="normal" onclick="pso(this,'og-main')"><div class="sopt-t">Normal</div><div class="sopt-s">Seimbang, tidak ekstrem ke mana-mana</div></div>
+      </div>
+    </div>
+
+    <div class="qb">
+      <div class="qt">Masalah utama yang paling sering muncul?</div>
+      <div class="opts" id="og-con">
+        <div class="opt on" data-v="acne"      onclick="po(this,'og-con')">Jerawat</div>
+        <div class="opt" data-v="aging"    onclick="po(this,'og-con')">Penuaan dini</div>
+        <div class="opt" data-v="dull"     onclick="po(this,'og-con')">Kusam</div>
+        <div class="opt" data-v="sensitive" onclick="po(this,'og-con')">Sensitif / iritasi</div>
+        <div class="opt" data-v="pigment"  onclick="po(this,'og-con')">Flek / hiperpigmentasi</div>
+      </div>
+    </div>
+
+    <div class="qb" style="margin-bottom:0">
+      <div class="qt">Reaksi kulit saat coba produk baru?</div>
+      <div class="opts" id="og-rxn">
+        <div class="opt on" data-v="stable"   onclick="po(this,'og-rxn')">Biasanya aman</div>
+        <div class="opt" data-v="breakout" onclick="po(this,'og-rxn')">Sering breakout</div>
+        <div class="opt" data-v="irritate" onclick="po(this,'og-rxn')">Sering merah / iritasi</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-run" id="btn-skin" onclick="runSkin()">Jalankan sistem pakar</button>
+  <div class="loading" id="load-skin"><div class="spinner"></div>Menjalankan forward-chaining...</div>
+
+  <div id="out-skin" class="result" style="display:none">
+    <div class="sk-top">
+      <div class="res-tag" style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p600);margin-bottom:8px">Hasil diagnosis</div>
+      <div class="sk-name" id="sk-type">—</div>
+      <div class="sk-desc" id="sk-desc">—</div>
+    </div>
+    <div class="reco-grid">
+      <div class="reco-card"><div class="sec-head">Rutinitas pagi</div><ul class="rlist" id="sk-am"></ul></div>
+      <div class="reco-card"><div class="sec-head">Rutinitas malam</div><ul class="rlist" id="sk-pm"></ul></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div style="margin-bottom:14px">
+        <div class="sec-head" style="margin-bottom:8px">Bahan aktif yang direkomendasikan</div>
+        <div class="tag-row" id="sk-ingr"></div>
+      </div>
+      <div>
+        <div class="sec-head" style="margin-bottom:8px">Hindari</div>
+        <div class="tag-row" id="sk-avoid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function goTab(t,b){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('on'));
+  document.getElementById('p-'+t).classList.add('on');
+  b.classList.add('on');
+}
+function po(el,gid){
+  document.querySelectorAll('#'+gid+' .opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+function pso(el,gid){
+  document.querySelectorAll('#'+gid+' .sopt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+function gv(gid){var e=document.querySelector('#'+gid+' .on');return e?e.dataset.v:null;}
+
+var scFat=5;
+(function(){
+  var wrap=document.getElementById('sc-fat');
+  for(var i=1;i<=10;i++){
+    (function(v){
+      var d=document.createElement('div');d.className='sdot';d.textContent=v;
+      d.onclick=function(){
+        scFat=v;
+        wrap.querySelectorAll('.sdot').forEach(function(x,xi){
+          x.className='sdot'+(xi+1<v?' half':xi+1===v?' on':'');
+        });
+      };
+      wrap.appendChild(d);
+    })(i);
+  }
+  wrap.querySelectorAll('.sdot').forEach(function(x,xi){
+    x.className='sdot'+(xi+1<5?' half':xi+1===5?' on':'');
+  });
+})();
+
+async function runBattery(){
+  var btn=document.getElementById('btn-bat');
+  btn.disabled=true;
+  document.getElementById('load-bat').style.display='block';
+  document.getElementById('out-bat').style.display='none';
+
+  try{
+    var res=await fetch('/api/social-battery',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        kelelahan:scFat,
+        durasi:parseFloat(gv('og-dur')||0.5),
+        mood:parseFloat(gv('og-mood')||5),
+        tidur:parseFloat(gv('og-slp')||7.5),
+        introvert:parseFloat(gv('og-int')||9)
+      })
+    });
+    var d=await res.json();
+    if(d.status!=='ok')throw new Error(d.message);
+
+    document.getElementById('r-num').textContent=d.hours%1===0?d.hours:d.hours.toFixed(1);
+    document.getElementById('r-badge').textContent=d.badge;
+    document.getElementById('g-pct').textContent=d.energy+'%';
+    var offset=(233-(d.energy/100*233)).toFixed(1);
+    document.getElementById('g-arc').setAttribute('stroke-dashoffset',offset);
+
+    document.getElementById('r-interp').innerHTML=d.interps.map(function(t){
+      return'<div class="iitem"><div class="idot"></div><div class="itext">'+t+'</div></div>';
+    }).join('');
+    document.getElementById('r-do').innerHTML=d.dos.map(function(x,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
+    }).join('');
+    document.getElementById('r-dont').innerHTML=d.donts.map(function(x,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+x+'</li>';
+    }).join('');
+
+    document.getElementById('out-bat').style.display='block';
+    setTimeout(function(){document.getElementById('out-bat').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  }catch(e){
+    alert('Error: '+e.message);
+  }finally{
+    btn.disabled=false;
+    document.getElementById('load-bat').style.display='none';
+  }
+}
+
+async function runSkin(){
+  var btn=document.getElementById('btn-skin');
+  btn.disabled=true;
+  document.getElementById('load-skin').style.display='block';
+  document.getElementById('out-skin').style.display='none';
+
+  try{
+    var res=await fetch('/api/skincare',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        main:gv('og-main')||'oily',
+        concern:gv('og-con')||'acne',
+        reaction:gv('og-rxn')||'stable'
+      })
+    });
+    var d=await res.json();
+    if(d.status!=='ok')throw new Error(d.message);
+
+    document.getElementById('sk-type').textContent=d.type;
+    document.getElementById('sk-desc').textContent=d.desc;
+    document.getElementById('sk-am').innerHTML=d.morning.map(function(s,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
+    }).join('');
+    document.getElementById('sk-pm').innerHTML=d.evening.map(function(s,i){
+      return'<li><span class="rnum">'+(i+1)+'</span>'+s+'</li>';
+    }).join('');
+    document.getElementById('sk-ingr').innerHTML=d.ingredients.map(function(x){
+      return'<span class="tg tg-g">'+x+'</span>';
+    }).join('');
+    document.getElementById('sk-avoid').innerHTML=d.avoid.map(function(x){
+      return'<span class="tg tg-r">'+x+'</span>';
+    }).join('');
+
+    document.getElementById('out-skin').style.display='block';
+    setTimeout(function(){document.getElementById('out-skin').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  }catch(e){
+    alert('Error: '+e.message);
+  }finally{
+    btn.disabled=false;
+    document.getElementById('load-skin').style.display='none';
+  }
+}
+</script>
+</body>
+</html>

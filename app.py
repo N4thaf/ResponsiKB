@@ -1,98 +1,334 @@
-import streamlit as st
-from fuzzy_system import SocialBatteryFuzzy
-from expert_system import SkinExpertSystem
+from flask import Flask, render_template, request, jsonify
+import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
 
-st.set_page_config(page_title="Wellness AI • Responsi KB", page_icon="✨", layout="wide")
+app = Flask(__name__)
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-body, .stApp { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #FAFAFA; }
-h1, h2, h3, h4 { color: #1D1D1F; font-weight: 600; letter-spacing: -0.3px; }
-.stTextInput>div>div>input, .stSelectbox>div>div, .stSlider>div>div>div, .stMultiselect>div>div { border-radius: 14px; border: 1px solid #E5E5EA; background: #FFFFFF; }
-.stSlider>div>div>div>div { background-color: #FFB6C1; }
-.card { background: #FFFFFF; border-radius: 20px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 1px solid #F2F2F7; margin-bottom: 24px; }
-.result-box { background: linear-gradient(135deg, #FFFFFF 0%, #FFF8F9 100%); border-radius: 20px; padding: 28px; box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25); border: 1px solid #FFE4E8; margin-top: 24px; }
-.stButton>button { background: linear-gradient(135deg, #FF8FA3 0%, #FF6B85 100%); color: white; border-radius: 14px; font-weight: 600; padding: 14px 28px; border: none; box-shadow: 0 4px 16px rgba(255, 107, 133, 0.3); transition: all 0.2s ease; }
-.stButton>button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 133, 0.4); }
-.badge { display: inline-block; background: #FFF0F3; color: #D6336C; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; margin: 4px; }
-.divider { height: 1px; background: #F2F2F7; margin: 20px 0; }
-.header-gradient { background: linear-gradient(135deg, #FFF5F7 0%, #FFFFFF 100%); border-radius: 24px; padding: 32px; margin-bottom: 32px; border: 1px solid #FFE4E8; }
-</style>
-""", unsafe_allow_html=True)
 
-fuzzy_sys = SocialBatteryFuzzy()
-skin_sys = SkinExpertSystem()
+# ════════════════════════════════════════════════════════════════
+#  FUZZY INFERENCE SYSTEM — Social Battery Manager
+#  Library  : scikit-fuzzy (skfuzzy)
+#  Metode   : Mamdani FIS, defuzzifikasi = centroid
+#  Input    : kelelahan, durasi, mood_awal, tidur, introvert_lvl
+#  Output   : recovery_time (jam)
+# ════════════════════════════════════════════════════════════════
 
-st.markdown("""
-<div class='header-gradient'>
-    <h1 style='margin: 0 0 8px 0;'>✨ Wellness AI</h1>
-    <p style='color: #86868B; margin: 0; font-size: 1.1rem;'>Responsi KB • Sistem Fuzzy & Sistem Pakar</p>
-</div>
-""", unsafe_allow_html=True)
+def build_fis():
+    # ── Antecedents ──────────────────────────────────────────────
+    kelelahan     = ctrl.Antecedent(np.arange(0, 11, 0.1), 'kelelahan')
+    durasi        = ctrl.Antecedent(np.arange(0, 13, 0.1), 'durasi')
+    mood_awal     = ctrl.Antecedent(np.arange(0, 11, 0.1), 'mood_awal')
+    tidur         = ctrl.Antecedent(np.arange(0, 11, 0.1), 'tidur')
+    introvert_lvl = ctrl.Antecedent(np.arange(0, 11, 0.1), 'introvert_lvl')
 
-tab1, tab2 = st.tabs(["🔋 Social Battery", "🧴 Skin Expert"])
+    # ── Consequent ───────────────────────────────────────────────
+    recovery = ctrl.Consequent(np.arange(0, 25, 0.1), 'recovery')
 
-with tab1:
-    st.markdown("<div class='card'><h2>🔋 Social Battery Manager</h2><p style='color:#86868B; margin-top:8px;'>Sistem Fuzzy: Penentuan Durasi Pemulihan Energi Sosial</p></div>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        kelelahan = st.slider("Level Kelelahan", 0, 100, 50)
-        durasi = st.slider("Durasi Interaksi (menit)", 0, 300, 120)
-        tidur = st.slider("Kualitas Tidur (jam)", 0, 10, 7)
-    with col2:
-        tipe_acara = st.selectbox("Tipe Acara", ["Santai", "Semi-Formal", "Formal"])
-        tipe_val = {"Santai": 20, "Semi-Formal": 50, "Formal": 85}[tipe_acara]
-        mood = st.slider("Mood Saat Ini", 0, 100, 50)
+    # ── MF: kelelahan ────────────────────────────────────────────
+    kelelahan['rendah']  = fuzz.trapmf(kelelahan.universe, [0, 0, 2, 4])
+    kelelahan['sedang']  = fuzz.trimf (kelelahan.universe, [3, 5, 7])
+    kelelahan['tinggi']  = fuzz.trapmf(kelelahan.universe, [6, 8, 10, 10])
 
-    if st.button("Hitung Recovery Time", key="btn_fuzzy"):
-        res = fuzzy_sys.calculate(kelelahan, tipe_val, durasi, tidur, mood)
-        st.markdown(f"""
-        <div class='result-box'>
-            <h3>⏱️ Rekomendasi Recovery</h3>
-            <div style='font-size: 3rem; font-weight: 700; color: #D6336C; margin: 12px 0;'>{res['recovery_time']} Menit</div>
-            <div class='badge'>{res['category']}</div>
-            <div class='divider'></div>
-            <p style='color: #424245; line-height: 1.7; font-size: 1.05rem;'>💡 {res['tips']}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    # ── MF: durasi (jam) ─────────────────────────────────────────
+    durasi['singkat']  = fuzz.trapmf(durasi.universe, [0, 0, 1, 2])
+    durasi['sedang']   = fuzz.trimf (durasi.universe, [1, 3, 6])
+    durasi['panjang']  = fuzz.trapmf(durasi.universe, [5, 7, 12, 12])
 
-with tab2:
-    st.markdown("<div class='card'><h2>🧴 Skin Expert System</h2><p style='color:#86868B; margin-top:8px;'>Sistem Pakar: Identifikasi Jenis Kulit & Rekomendasi Skincare</p></div>", unsafe_allow_html=True)
-    st.markdown("<div class='card'><h3>Pilih Ciri Kulit Kamu:</h3></div>", unsafe_allow_html=True)
-    
-    traits_map = {
-        "Minyak berlebih di area T-zone": "oily_tzone",
-        "Jerawat sering muncul": "frequent_breakouts",
-        "Kulit terasa kencang setelah cuci muka": "tight_after_wash",
-        "Ada bercak kering/bersisik": "dry_patches",
-        "Wajah kemerahan/mudah iritasi": "redness",
-        "Pori-pori terlihat besar": "visible_pores",
-        "Kulit terasa perih saat pakai produk": "stinging",
-        "Reaksi cepat terhadap produk baru": "reacts_to_products",
-        "Kulit tampak kusam": "dull_skin",
-        "Garis halus terlihat jelas": "fine_lines"
-    }
-    
-    selected = st.multiselect("Centang yang sesuai", list(traits_map.keys()))
-    selected_keys = [traits_map[t] for t in selected]
+    # ── MF: mood_awal ────────────────────────────────────────────
+    mood_awal['buruk']  = fuzz.trapmf(mood_awal.universe, [0, 0, 2, 4])
+    mood_awal['netral'] = fuzz.trimf (mood_awal.universe, [3, 5, 7])
+    mood_awal['baik']   = fuzz.trapmf(mood_awal.universe, [6, 8, 10, 10])
 
-    if st.button("Analisis Kulit", key="btn_skin"):
-        if not selected_keys:
-            st.warning("Pilih minimal 1 ciri kulit.")
+    # ── MF: tidur (jam) ──────────────────────────────────────────
+    tidur['kurang'] = fuzz.trapmf(tidur.universe, [0, 0, 4, 6])
+    tidur['cukup']  = fuzz.trimf (tidur.universe, [5, 7, 8.5])
+    tidur['lebih']  = fuzz.trapmf(tidur.universe, [8, 9, 10, 10])
+
+    # ── MF: introvert_level ──────────────────────────────────────
+    introvert_lvl['ekstrovert'] = fuzz.trapmf(introvert_lvl.universe, [0, 0, 2, 4])
+    introvert_lvl['ambivert']   = fuzz.trimf (introvert_lvl.universe, [3, 5, 7])
+    introvert_lvl['introvert']  = fuzz.trapmf(introvert_lvl.universe, [6, 8, 10, 10])
+
+    # ── MF: recovery (jam) ───────────────────────────────────────
+    recovery['sangat_singkat'] = fuzz.trapmf(recovery.universe, [0, 0, 1, 3])
+    recovery['singkat']        = fuzz.trimf (recovery.universe, [2, 4, 6])
+    recovery['sedang']         = fuzz.trimf (recovery.universe, [5, 8, 11])
+    recovery['panjang']        = fuzz.trimf (recovery.universe, [9, 13, 17])
+    recovery['sangat_panjang'] = fuzz.trapmf(recovery.universe, [15, 19, 24, 24])
+
+    # ── Rule Base (25 rules) ─────────────────────────────────────
+    rules = [
+        # Kelelahan rendah
+        ctrl.Rule(kelelahan['rendah'] & durasi['singkat'] & mood_awal['baik'],
+                  recovery['sangat_singkat']),
+        ctrl.Rule(kelelahan['rendah'] & durasi['singkat'] & introvert_lvl['ekstrovert'],
+                  recovery['sangat_singkat']),
+        ctrl.Rule(kelelahan['rendah'] & durasi['sedang'] & mood_awal['baik'] & tidur['cukup'],
+                  recovery['singkat']),
+        ctrl.Rule(kelelahan['rendah'] & durasi['sedang'] & introvert_lvl['ambivert'],
+                  recovery['singkat']),
+        ctrl.Rule(kelelahan['rendah'] & durasi['panjang'] & introvert_lvl['introvert'],
+                  recovery['sedang']),
+        ctrl.Rule(kelelahan['rendah'] & mood_awal['buruk'],
+                  recovery['sedang']),
+        ctrl.Rule(kelelahan['rendah'] & tidur['kurang'],
+                  recovery['singkat']),
+
+        # Kelelahan sedang
+        ctrl.Rule(kelelahan['sedang'] & durasi['singkat'] & mood_awal['baik'],
+                  recovery['singkat']),
+        ctrl.Rule(kelelahan['sedang'] & durasi['singkat'] & introvert_lvl['ekstrovert'],
+                  recovery['singkat']),
+        ctrl.Rule(kelelahan['sedang'] & durasi['sedang'] & tidur['cukup'],
+                  recovery['sedang']),
+        ctrl.Rule(kelelahan['sedang'] & durasi['sedang'] & tidur['kurang'],
+                  recovery['panjang']),
+        ctrl.Rule(kelelahan['sedang'] & durasi['panjang'] & introvert_lvl['introvert'],
+                  recovery['panjang']),
+        ctrl.Rule(kelelahan['sedang'] & durasi['panjang'] & mood_awal['buruk'],
+                  recovery['sangat_panjang']),
+        ctrl.Rule(kelelahan['sedang'] & mood_awal['buruk'] & tidur['kurang'],
+                  recovery['panjang']),
+        ctrl.Rule(kelelahan['sedang'] & introvert_lvl['ambivert'],
+                  recovery['sedang']),
+
+        # Kelelahan tinggi
+        ctrl.Rule(kelelahan['tinggi'] & durasi['singkat'] & tidur['lebih'],
+                  recovery['sedang']),
+        ctrl.Rule(kelelahan['tinggi'] & durasi['singkat'] & introvert_lvl['introvert'],
+                  recovery['panjang']),
+        ctrl.Rule(kelelahan['tinggi'] & durasi['sedang'],
+                  recovery['panjang']),
+        ctrl.Rule(kelelahan['tinggi'] & durasi['panjang'],
+                  recovery['sangat_panjang']),
+        ctrl.Rule(kelelahan['tinggi'] & tidur['kurang'],
+                  recovery['sangat_panjang']),
+        ctrl.Rule(kelelahan['tinggi'] & mood_awal['buruk'],
+                  recovery['sangat_panjang']),
+        ctrl.Rule(kelelahan['tinggi'] & introvert_lvl['introvert'] & tidur['kurang'],
+                  recovery['sangat_panjang']),
+
+        # Tidur & mood dominan
+        ctrl.Rule(tidur['kurang'] & mood_awal['buruk'] & introvert_lvl['introvert'],
+                  recovery['sangat_panjang']),
+        ctrl.Rule(tidur['lebih'] & mood_awal['baik'] & introvert_lvl['ekstrovert'],
+                  recovery['sangat_singkat']),
+        ctrl.Rule(mood_awal['baik'] & tidur['cukup'] & introvert_lvl['ambivert'],
+                  recovery['singkat']),
+    ]
+
+    system = ctrl.ControlSystem(rules)
+    return ctrl.ControlSystemSimulation(system)
+
+
+# Build FIS satu kali saat startup
+fis = build_fis()
+
+
+def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
+    kelelahan_val  = float(np.clip(kelelahan_val,  0, 10))
+    durasi_val     = float(np.clip(durasi_val,     0, 12))
+    mood_val       = float(np.clip(mood_val,       0, 10))
+    tidur_val      = float(np.clip(tidur_val,      0, 10))
+    introvert_val  = float(np.clip(introvert_val,  0, 10))
+
+    fis.input['kelelahan']     = kelelahan_val
+    fis.input['durasi']        = durasi_val
+    fis.input['mood_awal']     = mood_val
+    fis.input['tidur']         = tidur_val
+    fis.input['introvert_lvl'] = introvert_val
+    fis.compute()
+
+    recovery_hours = round(float(fis.output['recovery']), 1)
+    energy_raw = 100 - (kelelahan_val * 8) - (durasi_val * 1.2) + (tidur_val * 1.5) + (mood_val * 0.8)
+    energy_pct = int(np.clip(energy_raw, 5, 95))
+    return recovery_hours, energy_pct
+
+
+# ════════════════════════════════════════════════════════════════
+#  EXPERT SYSTEM — Identifikasi Jenis Kulit & Skincare
+#  Metode : Forward-chaining rule-based
+#  Input  : jenis kulit, masalah utama, reaksi terhadap produk
+#  Output : diagnosis + rutinitas pagi/malam + bahan aktif
+# ════════════════════════════════════════════════════════════════
+
+KNOWLEDGE_BASE = [
+    {
+        "id": "oily_acne",
+        "cond": lambda m, c, r: m == "oily" and (c == "acne" or r == "breakout"),
+        "type": "Berminyak & berjerawat",
+        "desc": "Produksi sebum berlebih menyumbat pori dan memicu breakout. Fokus pada kontrol minyak, anti-inflamasi, dan pencegahan penyumbatan pori.",
+        "morning": ["Gentle foaming cleanser (salicylic acid 0.5–2%)", "Niacinamide serum 10%", "Oil-free non-comedogenic moisturizer", "SPF 30–50 ringan"],
+        "evening": ["Double cleanse (oil + gentle foam)", "BHA toner", "Retinol atau adapalene (2–3x/minggu)", "Light gel moisturizer"],
+        "ingredients": ["Salicylic Acid", "Niacinamide", "Benzoyl Peroxide", "Adapalene", "Zinc PCA"],
+        "avoid": ["Heavy cream berlemak", "Coconut oil", "Alkohol konsentrasi tinggi", "Comedogenic oils"],
+    },
+    {
+        "id": "oily_aging",
+        "cond": lambda m, c, r: m == "oily" and c == "aging",
+        "type": "Berminyak & anti-aging",
+        "desc": "Kulit berminyak dengan tanda penuaan dini. Butuh kontrol sebum sekaligus antioksidan dan booster kolagen.",
+        "morning": ["Foaming cleanser", "Vitamin C serum (L-ascorbic acid)", "Lightweight moisturizer", "SPF 30–50"],
+        "evening": ["Double cleanse", "Retinol (mulai rendah, naikkan bertahap)", "Gel moisturizer"],
+        "ingredients": ["Vitamin C", "Retinol", "Peptide", "Niacinamide", "AHA"],
+        "avoid": ["Heavy emollient", "Skip SPF", "Mineral oil"],
+    },
+    {
+        "id": "oily_stable",
+        "cond": lambda m, c, r: m == "oily",
+        "type": "Berminyak normal",
+        "desc": "Sebum tinggi tanpa masalah signifikan. Prioritas regulasi minyak dan menjaga pori tetap bersih.",
+        "morning": ["Gel cleanser ringan", "Hyaluronic acid serum", "Oil-free moisturizer", "SPF 30+"],
+        "evening": ["Double cleanse", "AHA/BHA toner (2–3x/minggu)", "Light moisturizer"],
+        "ingredients": ["Niacinamide", "Hyaluronic Acid", "AHA", "BHA", "Green Tea"],
+        "avoid": ["Heavy oil", "Produk oklusif berat", "Comedogenic moisturizer"],
+    },
+    {
+        "id": "dry_sensitive",
+        "cond": lambda m, c, r: m == "dry" and (c == "sensitive" or r == "irritate"),
+        "type": "Kering & sensitif",
+        "desc": "Skin barrier lemah membuat kulit reaktif sekaligus kehilangan kelembapan. Pendekatan minimal dengan bahan calming dan barrier repair.",
+        "morning": ["Creamy fragrance-free cleanser", "Centella asiatica serum", "Ceramide moisturizer", "Mineral SPF 50"],
+        "evening": ["Micellar water + cleanser lembut", "Serum peptide atau madecassoside", "Sleeping mask calming"],
+        "ingredients": ["Ceramide", "Centella Asiatica", "Madecassoside", "Panthenol", "Allantoin"],
+        "avoid": ["Fragrance", "Essential oil", "Physical scrub", "Retinol di awal", "Alkohol"],
+    },
+    {
+        "id": "dry_aging",
+        "cond": lambda m, c, r: m == "dry" and c == "aging",
+        "type": "Kering & anti-aging",
+        "desc": "Kulit kering dengan tanda penuaan. Butuh hidrasi intensif sekaligus stimulasi produksi kolagen.",
+        "morning": ["Creamy cleanser", "Vitamin C + hyaluronic acid serum", "Rich ceramide moisturizer", "SPF 50"],
+        "evening": ["Gentle cleanser", "Retinol (mulai 0.025%)", "Facial oil (rosehip/argan)", "Sleeping mask"],
+        "ingredients": ["Retinol", "Peptide", "Hyaluronic Acid", "Ceramide", "Vitamin C", "Squalane"],
+        "avoid": ["Harsh exfoliant", "Alkohol", "Air panas saat cuci muka"],
+    },
+    {
+        "id": "dry_normal",
+        "cond": lambda m, c, r: m == "dry",
+        "type": "Kering",
+        "desc": "Kulit membutuhkan hidrasi ekstra dan perlindungan barrier agar tidak semakin dehidrasi.",
+        "morning": ["Creamy cleanser", "Hyaluronic acid serum", "Rich moisturizer", "SPF 30+"],
+        "evening": ["Gentle cleanser", "Retinol ringan (2x/minggu)", "Facial oil", "Sleeping mask"],
+        "ingredients": ["Hyaluronic Acid", "Shea Butter", "Ceramide", "Squalane", "Peptide"],
+        "avoid": ["Alkohol", "Harsh exfoliant", "Air panas"],
+    },
+    {
+        "id": "combo",
+        "cond": lambda m, c, r: m == "combo",
+        "type": "Kombinasi",
+        "desc": "T-zone berminyak sementara area lain lebih kering atau normal. Butuh pendekatan balance tanpa memperparah salah satu area.",
+        "morning": ["Balanced gel cleanser", "Niacinamide serum", "Lightweight moisturizer", "SPF 30+"],
+        "evening": ["Gentle cleanser", "BHA toner di T-zone saja", "Retinol ringan", "Gel moisturizer"],
+        "ingredients": ["Niacinamide", "Hyaluronic Acid", "Lactic Acid", "Green Tea Extract"],
+        "avoid": ["Over-exfoliating area pipi", "Heavy oil di T-zone", "Skip moisturizer"],
+    },
+    {
+        "id": "normal_aging",
+        "cond": lambda m, c, r: m == "normal" and c == "aging",
+        "type": "Normal & anti-aging",
+        "desc": "Kulit seimbang dengan tanda penuaan awal. Ideal untuk preventive skincare.",
+        "morning": ["Gentle cleanser", "Vitamin C serum", "Moisturizer ringan", "SPF 30+"],
+        "evening": ["Cleanser", "Retinol (2–3x/minggu)", "Peptide moisturizer"],
+        "ingredients": ["Vitamin C", "Retinol", "Peptide", "Niacinamide"],
+        "avoid": ["Over-exfoliating", "Skip SPF"],
+    },
+    {
+        "id": "normal",
+        "cond": lambda m, c, r: True,
+        "type": "Normal & seimbang",
+        "desc": "Kulit dalam kondisi ideal. Fokus pada konsistensi dan pencegahan kerusakan jangka panjang.",
+        "morning": ["Gentle cleanser", "Antioksidan serum", "Moisturizer ringan", "SPF 30+"],
+        "evening": ["Cleanser", "Moisturizer"],
+        "ingredients": ["Vitamin C", "Hyaluronic Acid", "Niacinamide", "SPF mineral"],
+        "avoid": ["Produk terlalu banyak", "Skip SPF", "Over-exfoliating"],
+    },
+]
+
+
+def forward_chain(main, concern, reaction):
+    """Forward-chaining: evaluasi rule dari atas ke bawah, return match pertama."""
+    for rule in KNOWLEDGE_BASE:
+        if rule["cond"](main, concern, reaction):
+            return {k: v for k, v in rule.items() if k not in ("id", "cond")}
+    return {k: v for k, v in KNOWLEDGE_BASE[-1].items() if k not in ("id", "cond")}
+
+
+# ════════════════════════════════════════════════════════════════
+#  ROUTES
+# ════════════════════════════════════════════════════════════════
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/api/social-battery", methods=["POST"])
+def api_battery():
+    data = request.get_json()
+    try:
+        hours, energy = run_fis(
+            data["kelelahan"], data["durasi"],
+            data["mood"], data["tidur"], data["introvert"]
+        )
+
+        if hours < 2:
+            badge = "Battery hampir penuh"
+            interps = [
+                "Energi sosialmu masih sangat terjaga setelah interaksi ini.",
+                "Durasi pendek atau suasana nyaman memperlambat drainase energi.",
+                "Kamu siap untuk interaksi lagi dalam waktu dekat.",
+            ]
+            dos   = ["Istirahat ringan 15–30 menit", "Interaksi santai dengan orang dekat masih oke", "Tetap monitor kondisimu"]
+            donts = ["Tidak ada batasan khusus saat ini"]
+        elif hours < 6:
+            badge = "Battery cukup"
+            interps = [
+                "Energi sosialmu berkurang berarti tapi masih dalam batas aman.",
+                "Interaksi lanjutan masih bisa dilakukan dengan orang yang familiar.",
+                "Situasi formal atau keramaian sebaiknya dihindari dulu.",
+            ]
+            dos   = ["Istirahat 30–60 menit", "Aktivitas solo yang menyenangkan", "Interaksi dengan orang sangat dekat oke"]
+            donts = ["Acara sosial besar atau baru", "Pertemuan formal yang melelahkan", "Keramaian yang tidak perlu"]
+        elif hours < 12:
+            badge = "Battery rendah"
+            interps = [
+                "Interaksi tadi menguras cukup banyak energi sosialmu.",
+                "Kombinasi durasi, tipe acara, dan kondisi fisikmu berkontribusi besar.",
+                "Butuh waktu cukup untuk recharge sebelum siap bersosialisasi lagi.",
+            ]
+            dos   = ["Waktu sendirian yang cukup", "Aktivitas pasif — nonton, baca, dengar musik", "Tidur lebih awal malam ini", "Matikan notifikasi"]
+            donts = ["Komitmen sosial baru hari ini", "Pertemuan formal", "Percakapan emosional yang berat"]
         else:
-            res = skin_sys.identify(selected_keys)
-            routine_html = "".join([f"<span class='badge'>{r}</span>" for r in res['routine']])
-            st.markdown(f"""
-            <div class='result-box'>
-                <h3>✨ Hasil Analisis</h3>
-                <div style='font-size: 2.5rem; font-weight: 700; color: #D6336C; margin: 12px 0;'>{res['type']}</div>
-                <div class='badge'>Keyakinan: {res['confidence']}%</div>
-                <div class='divider'></div>
-                <h4 style='margin-bottom: 12px;'>🧴 Rutinitas yang Direkomendasikan:</h4>
-                <div style='margin-bottom: 16px;'>{routine_html}</div>
-                <p style='color: #424245; line-height: 1.7; font-size: 1.05rem;'>💡 {res['tips']}</p>
-            </div>
-            """, unsafe_allow_html=True)
+            badge = "Battery hampir habis"
+            interps = [
+                "Sistem FIS mendeteksi kombinasi faktor yang sangat menguras energi.",
+                "Faktor introvert, kurang tidur, dan interaksi panjang berefek berlipat.",
+                "Recovery serius diperlukan — ini respons alami, bukan kelemahan.",
+            ]
+            dos   = ["Isolasi sosial penuh jika memungkinkan", "Prioritaskan tidur dan istirahat total", "Komunikasi teks asinkron saja jika mendesak"]
+            donts = ["Segala interaksi sosial baru", "Lingkungan ramai atau stimulatif", "Keputusan penting yang melibatkan orang lain"]
 
-st.markdown("<div style='text-align: center; color: #86868B; padding: 32px 0; font-size: 0.9rem;'>Made with ❤️ for Responsi KB</div>", unsafe_allow_html=True)
+        return jsonify({"status": "ok", "hours": hours, "energy": energy,
+                        "badge": badge, "interps": interps, "dos": dos, "donts": donts})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route("/api/skincare", methods=["POST"])
+def api_skin():
+    data = request.get_json()
+    try:
+        result = forward_chain(
+            data.get("main", "normal"),
+            data.get("concern", "acne"),
+            data.get("reaction", "stable"),
+        )
+        return jsonify({"status": "ok", **result})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
