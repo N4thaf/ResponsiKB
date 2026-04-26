@@ -1,14 +1,4 @@
-# ════════════════════════════════════════════════════════════════
-#  SISTEM PAKAR — Identifikasi Jenis Kulit & Rekomendasi Skincare
-#  Metode  : Forward-chaining rule-based
-#  Input   : jenis_kulit, masalah_utama, reaksi_produk,
-#             kondisi_lingkungan, riwayat_alergi, usia_kulit
-#  Output  : diagnosis + rutinitas pagi/malam + bahan aktif
-# ════════════════════════════════════════════════════════════════
-
 KNOWLEDGE_BASE = [
-
-    # ── OILY ────────────────────────────────────────────────────
 
     {
         "id": "oily_acne_sensitive",
@@ -160,8 +150,6 @@ KNOWLEDGE_BASE = [
         "ingredients": ["Niacinamide", "Hyaluronic Acid", "AHA", "BHA", "Green Tea"],
         "avoid": ["Heavy oil", "Produk oklusif berat", "Comedogenic moisturizer"],
     },
-
-    # ── DRY ─────────────────────────────────────────────────────
 
     {
         "id": "dry_allergy",
@@ -315,8 +303,6 @@ KNOWLEDGE_BASE = [
         "avoid": ["Alkohol", "Harsh exfoliant", "Air panas"],
     },
 
-    # ── COMBINATION ──────────────────────────────────────────────
-
     {
         "id": "combo_acne",
         "cond": lambda m, c, r, e, a, u:
@@ -366,8 +352,6 @@ KNOWLEDGE_BASE = [
         "ingredients": ["Niacinamide", "Hyaluronic Acid", "Lactic Acid", "Green Tea Extract"],
         "avoid": ["Over-exfoliating area pipi", "Heavy oil di T-zone", "Skip moisturizer"],
     },
-
-    # ── NORMAL ───────────────────────────────────────────────────
 
     {
         "id": "normal_aging_mature",

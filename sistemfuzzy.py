@@ -1,14 +1,5 @@
 import numpy as np
 
-# ════════════════════════════════════════════════════════════════
-#  SISTEM FUZZY LOGIC — Social Battery Manager
-#  Metode  : Mamdani
-#  Input   : kelelahan, durasi, mood_awal, tidur, introvert_lvl,
-#             tipe_interaksi, kebisingan
-#  Output  : recovery (jam)
-#  Defuzz  : Centroid
-# ════════════════════════════════════════════════════════════════
-
 
 def trimf(x, a, b, c):
     if x <= a or x >= c:
@@ -29,8 +20,6 @@ def trapmf(x, a, b, c, d):
     else:
         return (d - x) / (d - c)
 
-
-# ── Membership functions ────────────────────────────────────────
 
 def mf_kelelahan(val):
     return {
@@ -68,7 +57,6 @@ def mf_introvert(val):
     }
 
 def mf_tipe_interaksi(val):
-    # 0=online, 5=tatap muka kenal, 10=publik/orang baru
     return {
         'online':     trapmf(val, 0, 0, 1, 3),
         'familiar':   trimf(val, 2, 5, 7),
@@ -76,15 +64,12 @@ def mf_tipe_interaksi(val):
     }
 
 def mf_kebisingan(val):
-    # 0=senyap, 10=sangat bising/ramai
     return {
         'tenang':  trapmf(val, 0, 0, 2, 4),
         'sedang':  trimf(val, 3, 5, 7),
         'bising':  trapmf(val, 6, 8, 10, 10),
     }
 
-
-# ── Output MF ───────────────────────────────────────────────────
 
 def recovery_mf(label, x):
     if label == 'sangat_singkat': return trapmf(x, 0, 0, 1, 3)
@@ -95,7 +80,6 @@ def recovery_mf(label, x):
     return 0.0
 
 
-# ── Defuzzifikasi centroid ───────────────────────────────────────
 
 def defuzzify_centroid(activation_map, universe):
     aggregated = np.zeros_like(universe, dtype=float)
@@ -109,7 +93,6 @@ def defuzzify_centroid(activation_map, universe):
     return float(np.sum(universe * aggregated) / denom)
 
 
-# ── Rule base & inferensi ────────────────────────────────────────
 
 def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
             introvert_val, tipe_val, kebisingan_val):
@@ -138,7 +121,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
     def fire(output_label, *degrees):
         rules[output_label] = max(rules[output_label], min(degrees))
 
-    # ── Kelelahan rendah ────────────────────────────────────────
     fire('sangat_singkat', K['rendah'], D['singkat'], M['baik'])
     fire('sangat_singkat', K['rendah'], D['singkat'], I['ekstrovert'])
     fire('sangat_singkat', K['rendah'], TP['online'],   KB['tenang'])
@@ -150,7 +132,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
     fire('sedang',         K['rendah'], TP['publik'],  KB['bising'])
     fire('singkat',        K['rendah'], T['kurang'])
 
-    # ── Kelelahan sedang ────────────────────────────────────────
     fire('singkat',        K['sedang'], D['singkat'], M['baik'])
     fire('singkat',        K['sedang'], D['singkat'], I['ekstrovert'])
     fire('singkat',        K['sedang'], TP['online'],  KB['tenang'])
@@ -164,7 +145,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
     fire('sangat_panjang', K['sedang'], D['panjang'], M['buruk'])
     fire('sangat_panjang', K['sedang'], TP['publik'],  KB['bising'], I['introvert'])
 
-    # ── Kelelahan tinggi ────────────────────────────────────────
     fire('sedang',         K['tinggi'], D['singkat'], T['lebih'])
     fire('sedang',         K['tinggi'], TP['online'],  KB['tenang'])
     fire('panjang',        K['tinggi'], D['singkat'], I['introvert'])
@@ -176,14 +156,12 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
     fire('sangat_panjang', K['tinggi'], I['introvert'], T['kurang'])
     fire('sangat_panjang', K['tinggi'], TP['publik'],  KB['bising'])
 
-    # ── Tipe interaksi & kebisingan dominan ─────────────────────
     fire('sangat_singkat', TP['online'],   KB['tenang'],  M['baik'])
     fire('singkat',        TP['online'],   KB['sedang'],  I['ambivert'])
     fire('sedang',         TP['familiar'], KB['bising'],  K['sedang'])
     fire('panjang',        TP['publik'],   KB['sedang'],  I['introvert'])
     fire('sangat_panjang', TP['publik'],   KB['bising'],  I['introvert'], T['kurang'])
 
-    # ── Tidur & mood dominan ────────────────────────────────────
     fire('sangat_panjang', T['kurang'], M['buruk'],  I['introvert'])
     fire('sangat_singkat', T['lebih'],  M['baik'],   I['ekstrovert'])
     fire('singkat',        M['baik'],   T['cukup'],  I['ambivert'])
@@ -193,7 +171,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val,
     universe = np.arange(0, 24.1, 0.1)
     recovery_hours = round(defuzzify_centroid(rules, universe), 1)
 
-    # Energy: formula heuristik diperluas
     energy_raw = (100
                   - (k  * 7.5)
                   - (d  * 1.2)

@@ -9,8 +9,6 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-
-# ── Endpoint: Social Battery (Fuzzy Logic) ───────────────────────
 @app.route("/api/social-battery", methods=["POST"])
 def api_battery():
     data = request.get_json()
@@ -21,8 +19,8 @@ def api_battery():
             mood_val       = data["mood"],
             tidur_val      = data["tidur"],
             introvert_val  = data["introvert"],
-            tipe_val       = data["tipe"],       # 0=online, 5=familiar, 10=publik
-            kebisingan_val = data["kebisingan"], # 0=tenang, 10=bising
+            tipe_val       = data["tipe"],       
+            kebisingan_val = data["kebisingan"], 
         )
 
         if hours < 2:
@@ -60,7 +58,7 @@ def api_battery():
             interps = [
                 "Sistem FIS mendeteksi kombinasi faktor yang sangat menguras energi.",
                 "Faktor introvert, lingkungan bising, dan interaksi panjang berefek berlipat.",
-                "Recovery serius diperlukan — ini respons alami, bukan kelemahan.",
+                "Recovery serius diperlukan.",
             ]
             dos   = ["Isolasi sosial penuh jika memungkinkan", "Prioritaskan tidur dan istirahat total", "Komunikasi teks asinkron saja jika mendesak"]
             donts = ["Segala interaksi sosial baru", "Lingkungan ramai atau stimulatif", "Keputusan penting yang melibatkan orang lain"]
@@ -74,7 +72,6 @@ def api_battery():
         return jsonify({"status": "error", "message": str(e)}), 400
 
 
-# ── Endpoint: Skincare (Sistem Pakar) ───────────────────────────
 @app.route("/api/skincare", methods=["POST"])
 def api_skin():
     data = request.get_json()

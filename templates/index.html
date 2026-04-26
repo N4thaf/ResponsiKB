@@ -25,30 +25,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .hero{margin-bottom:22px}
 .hero-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p800);background:var(--p50);border:0.5px solid var(--bdr2);border-radius:100px;padding:4px 12px;margin-bottom:10px}
 .hero-title{font-size:24px;font-weight:600;letter-spacing:-.4px;color:var(--ink);line-height:1.25;margin-bottom:6px}
-.card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
-.card-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
-.qb{margin-bottom:18px}
-.qb:last-child{margin-bottom:0}
+
+/* Card: background pink muda */
+.card{background:var(--p50);border:0.5px solid var(--bdr2);border-radius:var(--rlg);padding:0;margin-bottom:10px;overflow:hidden}
+.card-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding:16px 18px 14px;border-bottom:1.5px solid var(--white)}
+
+/* Tiap pertanyaan dibungkus blok putih, dipisah border putih */
+.qb{background:var(--p50);padding:16px 18px;border-bottom:1.5px solid var(--white)}
+.qb:last-child{border-bottom:none}
+
 .qt{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
 .qs{font-size:12px;color:var(--ink3);margin-bottom:8px;line-height:1.55}
 .opts{display:flex;flex-wrap:wrap;gap:6px}
-.opt{padding:7px 15px;border-radius:100px;border:0.5px solid var(--bdr);background:var(--white);color:var(--ink2);font-size:13px;cursor:pointer;transition:all .18s}
+
+/* Opsi: background putih agar kontras dengan card pink */
+.opt{padding:7px 15px;border-radius:100px;border:0.5px solid var(--bdr2);background:var(--white);color:var(--ink2);font-size:13px;cursor:pointer;transition:all .18s}
 .opt:hover{border-color:var(--p200);color:var(--p800)}
-.opt.on{background:var(--p50);border-color:var(--p400);color:var(--p800);font-weight:500}
+.opt.on{background:var(--p400);border-color:var(--p400);color:#fff;font-weight:500}
+
 .scale-wrap{display:flex;flex-direction:column;gap:6px}
 .scale-track{display:flex;gap:4px}
-.sdot{flex:1;height:34px;border-radius:8px;border:0.5px solid var(--bdr);background:var(--white);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink3)}
+.sdot{flex:1;height:34px;border-radius:8px;border:0.5px solid var(--bdr2);background:var(--white);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink3)}
 .sdot:hover{border-color:var(--p200);color:var(--p800)}
 .sdot.on{background:var(--p400);border-color:var(--p400);color:#fff;font-weight:600}
-.sdot.half{background:var(--p50);border-color:var(--p100);color:var(--p800)}
+.sdot.half{background:var(--p100);border-color:var(--p100);color:var(--p800)}
 .scale-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3)}
+
 .skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.sopt{padding:10px 12px;border-radius:var(--r);border:0.5px solid var(--bdr);background:var(--white);cursor:pointer;transition:all .18s}
+/* Sopt: putih agar kontras */
+.sopt{padding:10px 12px;border-radius:var(--r);border:0.5px solid var(--bdr2);background:var(--white);cursor:pointer;transition:all .18s}
 .sopt:hover{border-color:var(--p200)}
-.sopt.on{background:var(--p50);border-color:var(--p400)}
+.sopt.on{background:var(--p400);border-color:var(--p400)}
 .sopt-t{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
-.sopt.on .sopt-t{color:var(--p800)}
+.sopt.on .sopt-t{color:#fff}
 .sopt-s{font-size:11px;color:var(--ink3);line-height:1.4}
+.sopt.on .sopt-s{color:rgba(255,255,255,0.8)}
+
 .btn-run{width:100%;padding:14px;border:none;border-radius:var(--r);background:var(--p400);color:#fff;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:6px}
 .btn-run:hover{background:var(--p600)}
 .btn-run:active{transform:scale(.98)}
@@ -63,14 +75,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .res-unit{font-size:13px;color:var(--ink3);margin-top:3px;margin-bottom:14px}
 .res-badge{display:inline-block;padding:5px 16px;border-radius:100px;background:var(--p400);color:#fff;font-size:12px;font-weight:500;margin-bottom:16px}
 .gauge-note{font-size:11px;color:var(--ink3);margin-top:4px}
-.interp-card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
+.interp-card{background:var(--p50);border:0.5px solid var(--bdr2);border-radius:var(--rlg);padding:18px;margin-bottom:10px}
 .sec-head{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
-.iitem{display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--bdr)}
+.iitem{display:flex;gap:10px;padding:9px 0;border-bottom:1.5px solid var(--white)}
 .iitem:last-child{border-bottom:none;padding-bottom:0}
 .idot{width:5px;height:5px;border-radius:50%;background:var(--p400);margin-top:7px;flex-shrink:0}
 .itext{font-size:13px;color:var(--ink2);line-height:1.55}
 .reco-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.reco-card{background:var(--white);border:0.5px solid var(--bdr);border-radius:var(--r);padding:14px}
+.reco-card{background:var(--p50);border:0.5px solid var(--bdr2);border-radius:var(--r);padding:14px}
 .rlist{list-style:none;display:flex;flex-direction:column;gap:6px}
 .rlist li{font-size:12px;color:var(--ink2);line-height:1.45;display:flex;gap:7px;align-items:flex-start}
 .rnum{font-size:10px;font-weight:600;color:var(--p400);min-width:13px;margin-top:2px}
@@ -96,7 +108,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
   </div>
 </div>
 
-<!-- ═══════════════ PANEL BATTERY ═══════════════ -->
 <div id="p-battery" class="panel on">
   <div class="hero">
     <div class="hero-tag">Sistem Fuzzy Logic</div>
@@ -108,10 +119,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 
     <div class="qb">
       <div class="qt">Seberapa lelah secara sosial kamu sekarang?</div>
-      <div class="qs">Bukan lelah fisik, tapi rasa ingin sendirian dan tidak berinteraksi.</div>
       <div class="scale-wrap">
         <div class="scale-track" id="sc-fat"></div>
-        <div class="scale-ends"><span>Masih segar (0)</span><span>Kelelahan berat (10)</span></div>
+        <div class="scale-ends"><span>Masih segar (0)</span><span>Sangat Kelelahan (10)</span></div>
       </div>
     </div>
 
@@ -119,15 +129,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="qt">Berapa lama interaksi berlangsung?</div>
       <div class="opts" id="og-dur">
         <div class="opt" data-v="0.5" onclick="po(this,'og-dur')">Kurang dari 1 jam</div>
-        <div class="opt" data-v="2"   onclick="po(this,'og-dur')">1–3 jam</div>
-        <div class="opt" data-v="4.5" onclick="po(this,'og-dur')">3–6 jam</div>
+        <div class="opt" data-v="2"   onclick="po(this,'og-dur')">1-3 jam</div>
+        <div class="opt" data-v="4.5" onclick="po(this,'og-dur')">3-6 jam</div>
         <div class="opt" data-v="8"   onclick="po(this,'og-dur')">Lebih dari 6 jam</div>
       </div>
     </div>
 
     <div class="qb">
       <div class="qt">Tipe interaksi yang baru terjadi?</div>
-      <div class="qs">Online lebih ringan, bertemu orang baru / publik lebih menguras energi.</div>
       <div class="opts" id="og-tipe">
         <div class="opt" data-v="0"  onclick="po(this,'og-tipe')">Online / virtual</div>
         <div class="opt" data-v="5"  onclick="po(this,'og-tipe')">Tatap muka — orang dikenal</div>
@@ -137,7 +146,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 
     <div class="qb">
       <div class="qt">Kondisi lingkungan selama interaksi?</div>
-      <div class="qs">Kebisingan dan keramaian memperparah kelelahan sosial.</div>
       <div class="opts" id="og-bising">
         <div class="opt" data-v="1"  onclick="po(this,'og-bising')">Tenang / sepi</div>
         <div class="opt" data-v="5"  onclick="po(this,'og-bising')">Cukup ramai</div>
@@ -158,15 +166,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="qt">Berapa jam tidur semalam?</div>
       <div class="opts" id="og-slp">
         <div class="opt" data-v="3"   onclick="po(this,'og-slp')">Kurang dari 5 jam</div>
-        <div class="opt" data-v="5.5" onclick="po(this,'og-slp')">5–6 jam</div>
-        <div class="opt" data-v="7.5" onclick="po(this,'og-slp')">7–8 jam</div>
+        <div class="opt" data-v="5.5" onclick="po(this,'og-slp')">5-6 jam</div>
+        <div class="opt" data-v="7.5" onclick="po(this,'og-slp')">7-8 jam</div>
         <div class="opt" data-v="9"   onclick="po(this,'og-slp')">Lebih dari 8 jam</div>
       </div>
     </div>
 
-    <div class="qb" style="margin-bottom:0">
+    <div class="qb">
       <div class="qt">Kamu termasuk tipe apa?</div>
-      <div class="qs">Introvert lebih cepat terkuras dalam interaksi yang sama.</div>
       <div class="opts" id="og-int">
         <div class="opt" data-v="9" onclick="po(this,'og-int')">Introvert</div>
         <div class="opt" data-v="5" onclick="po(this,'og-int')">Ambivert</div>
@@ -181,7 +188,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 
   <div id="out-bat" class="result" style="display:none">
     <div class="res-top">
-      <div class="res-tag">Output FIS — defuzzifikasi centroid</div>
       <div class="res-big" id="r-num">—</div>
       <div class="res-unit">jam recovery yang direkomendasikan</div>
       <div class="res-badge" id="r-badge">—</div>
@@ -209,7 +215,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
   </div>
 </div>
 
-<!-- ═══════════════ PANEL SKINCARE ═══════════════ -->
 <div id="p-skin" class="panel">
   <div class="hero">
     <div class="hero-tag">Sistem Pakar</div>
@@ -251,7 +256,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 
     <div class="qb">
       <div class="qt">Kondisi lingkungan / iklim sehari-hari?</div>
-      <div class="qs">Iklim mempengaruhi kebutuhan hidrasi dan kontrol minyak.</div>
       <div class="opts" id="og-env">
         <div class="opt" data-v="humid"  onclick="po(this,'og-env')">Panas & lembap (tropis)</div>
         <div class="opt" data-v="dry"    onclick="po(this,'og-env')">Kering / ber-AC terus</div>
@@ -262,19 +266,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
     <div class="qb">
       <div class="qt">Riwayat alergi terhadap bahan skincare?</div>
       <div class="opts" id="og-alg">
-        <div class="opt" data-v="none"     onclick="po(this,'og-alg')">Tidak ada</div>
+        <div class="opt" data-v="none"      onclick="po(this,'og-alg')">Tidak ada</div>
         <div class="opt" data-v="fragrance" onclick="po(this,'og-alg')">Fragrance / parfum</div>
-        <div class="opt" data-v="paraben"  onclick="po(this,'og-alg')">Paraben</div>
-        <div class="opt" data-v="both"     onclick="po(this,'og-alg')">Keduanya</div>
+        <div class="opt" data-v="paraben"   onclick="po(this,'og-alg')">Paraben</div>
+        <div class="opt" data-v="both"      onclick="po(this,'og-alg')">Keduanya</div>
       </div>
     </div>
 
-    <div class="qb" style="margin-bottom:0">
+    <div class="qb">
       <div class="qt">Rentang usia kulitmu?</div>
-      <div class="qs">Usia mempengaruhi kebutuhan aktif dan agresivitas treatment.</div>
       <div class="opts" id="og-age">
         <div class="opt" data-v="young"  onclick="po(this,'og-age')">Di bawah 25 tahun</div>
-        <div class="opt" data-v="adult"  onclick="po(this,'og-age')">25–35 tahun</div>
+        <div class="opt" data-v="adult"  onclick="po(this,'og-age')">25-35 tahun</div>
         <div class="opt" data-v="mature" onclick="po(this,'og-age')">Di atas 35 tahun</div>
       </div>
     </div>
@@ -295,11 +298,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
       <div class="reco-card"><div class="sec-head">Rutinitas malam</div><ul class="rlist" id="sk-pm"></ul></div>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div style="margin-bottom:14px">
+      <div class="qb" style="border-bottom:1.5px solid var(--white)">
         <div class="sec-head" style="margin-bottom:8px">Bahan aktif yang direkomendasikan</div>
         <div class="tag-row" id="sk-ingr"></div>
       </div>
-      <div>
+      <div class="qb">
         <div class="sec-head" style="margin-bottom:8px">Hindari</div>
         <div class="tag-row" id="sk-avoid"></div>
       </div>
@@ -328,7 +331,6 @@ function pso(el,gid){
 }
 function gv(gid){var e=document.querySelector('#'+gid+' .on');return e?e.dataset.v:null;}
 
-// Scale kelelahan — tidak ada default
 var scFat=null;
 (function(){
   var wrap=document.getElementById('sc-fat');
@@ -348,15 +350,13 @@ var scFat=null;
 })();
 
 function checkReady(){
-  // Battery: scale + 6 grup
-  var batOk = scFat!==null && gv('og-dur') && gv('og-tipe') && gv('og-bising') &&
-              gv('og-mood') && gv('og-slp') && gv('og-int');
+  var batOk=scFat!==null&&gv('og-dur')&&gv('og-tipe')&&gv('og-bising')&&
+            gv('og-mood')&&gv('og-slp')&&gv('og-int');
   document.getElementById('btn-bat').disabled=!batOk;
   document.getElementById('hint-bat').style.display=batOk?'none':'block';
 
-  // Skin: 6 grup
-  var skinOk = gv('og-main') && gv('og-con') && gv('og-rxn') &&
-               gv('og-env') && gv('og-alg') && gv('og-age');
+  var skinOk=gv('og-main')&&gv('og-con')&&gv('og-rxn')&&
+             gv('og-env')&&gv('og-alg')&&gv('og-age');
   document.getElementById('btn-skin').disabled=!skinOk;
   document.getElementById('hint-skin').style.display=skinOk?'none':'block';
 }
@@ -370,18 +370,14 @@ async function runBattery(){
     var res=await fetch('/api/social-battery',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        kelelahan: scFat,
-        durasi:    parseFloat(gv('og-dur')),
-        tipe:      parseFloat(gv('og-tipe')),
-        kebisingan:parseFloat(gv('og-bising')),
-        mood:      parseFloat(gv('og-mood')),
-        tidur:     parseFloat(gv('og-slp')),
-        introvert: parseFloat(gv('og-int')),
+        kelelahan:scFat,durasi:parseFloat(gv('og-dur')),
+        tipe:parseFloat(gv('og-tipe')),kebisingan:parseFloat(gv('og-bising')),
+        mood:parseFloat(gv('og-mood')),tidur:parseFloat(gv('og-slp')),
+        introvert:parseFloat(gv('og-int'))
       })
     });
     var d=await res.json();
     if(d.status!=='ok')throw new Error(d.message);
-
     document.getElementById('r-num').textContent=d.hours%1===0?d.hours:d.hours.toFixed(1);
     document.getElementById('r-badge').textContent=d.badge;
     document.getElementById('g-pct').textContent=d.energy+'%';
@@ -410,17 +406,12 @@ async function runSkin(){
     var res=await fetch('/api/skincare',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        main:        gv('og-main'),
-        concern:     gv('og-con'),
-        reaction:    gv('og-rxn'),
-        environment: gv('og-env'),
-        allergy:     gv('og-alg'),
-        age_group:   gv('og-age'),
+        main:gv('og-main'),concern:gv('og-con'),reaction:gv('og-rxn'),
+        environment:gv('og-env'),allergy:gv('og-alg'),age_group:gv('og-age')
       })
     });
     var d=await res.json();
     if(d.status!=='ok')throw new Error(d.message);
-
     document.getElementById('sk-type').textContent=d.type;
     document.getElementById('sk-desc').textContent=d.desc;
     document.getElementById('sk-am').innerHTML=d.morning.map(function(s,i){
