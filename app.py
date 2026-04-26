@@ -3,12 +3,6 @@ import numpy as np
 
 app = Flask(__name__)
 
-
-# ════════════════════════════════════════════════════════════════
-#  FUZZY LOGIC — Manual Implementation (tanpa scikit-fuzzy)
-#  Membership functions + Mamdani inference + centroid defuzz
-# ════════════════════════════════════════════════════════════════
-
 def trimf(x, a, b, c):
     """Triangular membership function."""
     if x <= a or x >= c:
@@ -30,8 +24,6 @@ def trapmf(x, a, b, c, d):
     else:
         return (d - x) / (d - c)
 
-
-# ── Membership degrees per variabel ─────────────────────────────
 
 def mf_kelelahan(val):
     return {
@@ -87,7 +79,7 @@ def defuzzify_centroid(activation_map, universe):
 
     denom = np.sum(aggregated)
     if denom == 0:
-        return 8.0  # fallback default
+        return 8.0  
     return float(np.sum(universe * aggregated) / denom)
 
 
@@ -104,14 +96,12 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
     T = mf_tidur(t)
     I = mf_introvert(i)
 
-    # Rule activation (AND = min, akumulasi = max)
     rules = {'sangat_singkat': 0.0, 'singkat': 0.0, 'sedang': 0.0,
              'panjang': 0.0, 'sangat_panjang': 0.0}
 
     def fire(output_label, *degrees):
         rules[output_label] = max(rules[output_label], min(degrees))
 
-    # ── Kelelahan rendah ────────────────────────────────────────
     fire('sangat_singkat', K['rendah'], D['singkat'], M['baik'])
     fire('sangat_singkat', K['rendah'], D['singkat'], I['ekstrovert'])
     fire('singkat',        K['rendah'], D['sedang'],  M['baik'], T['cukup'])
@@ -120,7 +110,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
     fire('sedang',         K['rendah'], M['buruk'])
     fire('singkat',        K['rendah'], T['kurang'])
 
-    # ── Kelelahan sedang ────────────────────────────────────────
     fire('singkat',        K['sedang'], D['singkat'], M['baik'])
     fire('singkat',        K['sedang'], D['singkat'], I['ekstrovert'])
     fire('sedang',         K['sedang'], D['sedang'],  T['cukup'])
@@ -130,7 +119,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
     fire('panjang',        K['sedang'], M['buruk'],   T['kurang'])
     fire('sedang',         K['sedang'], I['ambivert'])
 
-    # ── Kelelahan tinggi ────────────────────────────────────────
     fire('sedang',         K['tinggi'], D['singkat'], T['lebih'])
     fire('panjang',        K['tinggi'], D['singkat'], I['introvert'])
     fire('panjang',        K['tinggi'], D['sedang'])
@@ -139,7 +127,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
     fire('sangat_panjang', K['tinggi'], M['buruk'])
     fire('sangat_panjang', K['tinggi'], I['introvert'], T['kurang'])
 
-    # ── Tidur & mood dominan ────────────────────────────────────
     fire('sangat_panjang', T['kurang'], M['buruk'],  I['introvert'])
     fire('sangat_singkat', T['lebih'],  M['baik'],   I['ekstrovert'])
     fire('singkat',        M['baik'],   T['cukup'],  I['ambivert'])
@@ -152,11 +139,6 @@ def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
 
     return recovery_hours, energy_pct
 
-
-# ════════════════════════════════════════════════════════════════
-#  EXPERT SYSTEM — Identifikasi Jenis Kulit & Skincare
-#  Metode : Forward-chaining rule-based
-# ════════════════════════════════════════════════════════════════
 
 KNOWLEDGE_BASE = [
     {
@@ -259,10 +241,6 @@ def forward_chain(main, concern, reaction):
     return {k: v for k, v in KNOWLEDGE_BASE[-1].items() if k not in ("id", "cond")}
 
 
-# ════════════════════════════════════════════════════════════════
-#  ROUTES
-# ════════════════════════════════════════════════════════════════
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -309,7 +287,7 @@ def api_battery():
             interps = [
                 "Sistem FIS mendeteksi kombinasi faktor yang sangat menguras energi.",
                 "Faktor introvert, kurang tidur, dan interaksi panjang berefek berlipat.",
-                "Recovery serius diperlukan — ini respons alami, bukan kelemahan.",
+                "Recovery serius diperlukan.",
             ]
             dos   = ["Isolasi sosial penuh jika memungkinkan", "Prioritaskan tidur dan istirahat total", "Komunikasi teks asinkron saja jika mendesak"]
             donts = ["Segala interaksi sosial baru", "Lingkungan ramai atau stimulatif", "Keputusan penting yang melibatkan orang lain"]
