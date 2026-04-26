@@ -36,11 +36,11 @@ def api_battery():
         elif hours < 6:
             badge = "Battery cukup"
             interps = [
-                "Energi sosialmu berkurang berarti tapi masih dalam batas aman.",
+                "Energi sosialmu berkurang, tapi masih dalam batas aman.",
                 "Interaksi lanjutan masih bisa dilakukan dengan orang yang familiar.",
                 "Situasi formal atau keramaian sebaiknya dihindari dulu.",
             ]
-            dos   = ["Istirahat 30–60 menit", "Aktivitas solo yang menyenangkan", "Interaksi dengan orang sangat dekat oke"]
+            dos   = ["Istirahat 30-60 menit", "Aktivitas solo yang menyenangkan", "Interaksi dengan orang sangat dekat oke"]
             donts = ["Acara sosial besar atau baru", "Pertemuan formal yang melelahkan", "Keramaian yang tidak perlu"]
 
         elif hours < 12:
@@ -50,13 +50,13 @@ def api_battery():
                 "Kombinasi durasi, tipe acara, dan kondisi lingkungan berkontribusi besar.",
                 "Butuh waktu cukup untuk recharge sebelum siap bersosialisasi lagi.",
             ]
-            dos   = ["Waktu sendirian yang cukup", "Aktivitas pasif — nonton, baca, dengar musik", "Tidur lebih awal malam ini", "Matikan notifikasi"]
+            dos   = ["Waktu sendirian yang cukup", "Aktivitas pasif, nonton, baca, dengar musik", "Tidur lebih awal malam ini", "Matikan notifikasi"]
             donts = ["Komitmen sosial baru hari ini", "Pertemuan formal", "Percakapan emosional yang berat"]
 
         else:
             badge = "Battery hampir habis"
             interps = [
-                "Sistem FIS mendeteksi kombinasi faktor yang sangat menguras energi.",
+                "Terdeteksi kombinasi faktor yang sangat menguras energi.",
                 "Faktor introvert, lingkungan bising, dan interaksi panjang berefek berlipat.",
                 "Recovery serius diperlukan.",
             ]
