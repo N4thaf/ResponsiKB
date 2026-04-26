@@ -81,7 +81,7 @@ KNOWLEDGE_BASE = [
         "id": "oily_aging_mature",
         "cond": lambda m, c, r, e, a, u:
             m == "oily" and c == "aging" and u == "mature",
-        "type": "Berminyak, anti-aging (kulit matang)",
+        "type": "Berminyak, anti-aging",
         "desc": (
             "Kulit berminyak dengan tanda penuaan lebih lanjut. "
             "Dibutuhkan retinoid yang lebih kuat dan peptide intensif "
@@ -205,7 +205,7 @@ KNOWLEDGE_BASE = [
         "id": "dry_aging_mature",
         "cond": lambda m, c, r, e, a, u:
             m == "dry" and c == "aging" and u == "mature",
-        "type": "Kering & anti-aging (kulit matang)",
+        "type": "Kering & anti-aging",
         "desc": (
             "Kulit kering dengan tanda penuaan signifikan. "
             "Butuh hidrasi berlapis dan stimulasi kolagen intensif."
@@ -357,7 +357,7 @@ KNOWLEDGE_BASE = [
         "id": "normal_aging_mature",
         "cond": lambda m, c, r, e, a, u:
             m == "normal" and c == "aging" and u == "mature",
-        "type": "Normal & anti-aging (kulit matang)",
+        "type": "Normal & anti-aging",
         "desc": (
             "Kulit normal dengan tanda penuaan yang sudah lebih jelas. "
             "Fokus pada stimulasi kolagen, antioksidan kuat, dan hidrasi mendalam."
