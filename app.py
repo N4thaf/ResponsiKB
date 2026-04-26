@@ -6,14 +6,6 @@ from skfuzzy import control as ctrl
 app = Flask(__name__)
 
 
-# ════════════════════════════════════════════════════════════════
-#  FUZZY INFERENCE SYSTEM — Social Battery Manager
-#  Library  : scikit-fuzzy (skfuzzy)
-#  Metode   : Mamdani FIS, defuzzifikasi = centroid
-#  Input    : kelelahan, durasi, mood_awal, tidur, introvert_lvl
-#  Output   : recovery_time (jam)
-# ════════════════════════════════════════════════════════════════
-
 def build_fis():
     # ── Antecedents ──────────────────────────────────────────────
     kelelahan     = ctrl.Antecedent(np.arange(0, 11, 0.1), 'kelelahan')
@@ -122,11 +114,19 @@ def build_fis():
     return ctrl.ControlSystemSimulation(system)
 
 
-# Build FIS satu kali saat startup
-fis = build_fis()
+# ── Lazy initialization — build FIS hanya saat pertama kali dipakai ──
+_fis = None
+
+def get_fis():
+    global _fis
+    if _fis is None:
+        _fis = build_fis()
+    return _fis
 
 
 def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
+    fis = get_fis()  # lazy load
+
     kelelahan_val  = float(np.clip(kelelahan_val,  0, 10))
     durasi_val     = float(np.clip(durasi_val,     0, 12))
     mood_val       = float(np.clip(mood_val,       0, 10))
