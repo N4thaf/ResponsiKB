@@ -1,156 +1,161 @@
 from flask import Flask, render_template, request, jsonify
 import numpy as np
-import skfuzzy as fuzz
-from skfuzzy import control as ctrl
 
 app = Flask(__name__)
 
 
-def build_fis():
-    # ── Antecedents ──────────────────────────────────────────────
-    kelelahan     = ctrl.Antecedent(np.arange(0, 11, 0.1), 'kelelahan')
-    durasi        = ctrl.Antecedent(np.arange(0, 13, 0.1), 'durasi')
-    mood_awal     = ctrl.Antecedent(np.arange(0, 11, 0.1), 'mood_awal')
-    tidur         = ctrl.Antecedent(np.arange(0, 11, 0.1), 'tidur')
-    introvert_lvl = ctrl.Antecedent(np.arange(0, 11, 0.1), 'introvert_lvl')
+# ════════════════════════════════════════════════════════════════
+#  FUZZY LOGIC — Manual Implementation (tanpa scikit-fuzzy)
+#  Membership functions + Mamdani inference + centroid defuzz
+# ════════════════════════════════════════════════════════════════
 
-    # ── Consequent ───────────────────────────────────────────────
-    recovery = ctrl.Consequent(np.arange(0, 25, 0.1), 'recovery')
-
-    # ── MF: kelelahan ────────────────────────────────────────────
-    kelelahan['rendah']  = fuzz.trapmf(kelelahan.universe, [0, 0, 2, 4])
-    kelelahan['sedang']  = fuzz.trimf (kelelahan.universe, [3, 5, 7])
-    kelelahan['tinggi']  = fuzz.trapmf(kelelahan.universe, [6, 8, 10, 10])
-
-    # ── MF: durasi (jam) ─────────────────────────────────────────
-    durasi['singkat']  = fuzz.trapmf(durasi.universe, [0, 0, 1, 2])
-    durasi['sedang']   = fuzz.trimf (durasi.universe, [1, 3, 6])
-    durasi['panjang']  = fuzz.trapmf(durasi.universe, [5, 7, 12, 12])
-
-    # ── MF: mood_awal ────────────────────────────────────────────
-    mood_awal['buruk']  = fuzz.trapmf(mood_awal.universe, [0, 0, 2, 4])
-    mood_awal['netral'] = fuzz.trimf (mood_awal.universe, [3, 5, 7])
-    mood_awal['baik']   = fuzz.trapmf(mood_awal.universe, [6, 8, 10, 10])
-
-    # ── MF: tidur (jam) ──────────────────────────────────────────
-    tidur['kurang'] = fuzz.trapmf(tidur.universe, [0, 0, 4, 6])
-    tidur['cukup']  = fuzz.trimf (tidur.universe, [5, 7, 8.5])
-    tidur['lebih']  = fuzz.trapmf(tidur.universe, [8, 9, 10, 10])
-
-    # ── MF: introvert_level ──────────────────────────────────────
-    introvert_lvl['ekstrovert'] = fuzz.trapmf(introvert_lvl.universe, [0, 0, 2, 4])
-    introvert_lvl['ambivert']   = fuzz.trimf (introvert_lvl.universe, [3, 5, 7])
-    introvert_lvl['introvert']  = fuzz.trapmf(introvert_lvl.universe, [6, 8, 10, 10])
-
-    # ── MF: recovery (jam) ───────────────────────────────────────
-    recovery['sangat_singkat'] = fuzz.trapmf(recovery.universe, [0, 0, 1, 3])
-    recovery['singkat']        = fuzz.trimf (recovery.universe, [2, 4, 6])
-    recovery['sedang']         = fuzz.trimf (recovery.universe, [5, 8, 11])
-    recovery['panjang']        = fuzz.trimf (recovery.universe, [9, 13, 17])
-    recovery['sangat_panjang'] = fuzz.trapmf(recovery.universe, [15, 19, 24, 24])
-
-    # ── Rule Base (25 rules) ─────────────────────────────────────
-    rules = [
-        # Kelelahan rendah
-        ctrl.Rule(kelelahan['rendah'] & durasi['singkat'] & mood_awal['baik'],
-                  recovery['sangat_singkat']),
-        ctrl.Rule(kelelahan['rendah'] & durasi['singkat'] & introvert_lvl['ekstrovert'],
-                  recovery['sangat_singkat']),
-        ctrl.Rule(kelelahan['rendah'] & durasi['sedang'] & mood_awal['baik'] & tidur['cukup'],
-                  recovery['singkat']),
-        ctrl.Rule(kelelahan['rendah'] & durasi['sedang'] & introvert_lvl['ambivert'],
-                  recovery['singkat']),
-        ctrl.Rule(kelelahan['rendah'] & durasi['panjang'] & introvert_lvl['introvert'],
-                  recovery['sedang']),
-        ctrl.Rule(kelelahan['rendah'] & mood_awal['buruk'],
-                  recovery['sedang']),
-        ctrl.Rule(kelelahan['rendah'] & tidur['kurang'],
-                  recovery['singkat']),
-
-        # Kelelahan sedang
-        ctrl.Rule(kelelahan['sedang'] & durasi['singkat'] & mood_awal['baik'],
-                  recovery['singkat']),
-        ctrl.Rule(kelelahan['sedang'] & durasi['singkat'] & introvert_lvl['ekstrovert'],
-                  recovery['singkat']),
-        ctrl.Rule(kelelahan['sedang'] & durasi['sedang'] & tidur['cukup'],
-                  recovery['sedang']),
-        ctrl.Rule(kelelahan['sedang'] & durasi['sedang'] & tidur['kurang'],
-                  recovery['panjang']),
-        ctrl.Rule(kelelahan['sedang'] & durasi['panjang'] & introvert_lvl['introvert'],
-                  recovery['panjang']),
-        ctrl.Rule(kelelahan['sedang'] & durasi['panjang'] & mood_awal['buruk'],
-                  recovery['sangat_panjang']),
-        ctrl.Rule(kelelahan['sedang'] & mood_awal['buruk'] & tidur['kurang'],
-                  recovery['panjang']),
-        ctrl.Rule(kelelahan['sedang'] & introvert_lvl['ambivert'],
-                  recovery['sedang']),
-
-        # Kelelahan tinggi
-        ctrl.Rule(kelelahan['tinggi'] & durasi['singkat'] & tidur['lebih'],
-                  recovery['sedang']),
-        ctrl.Rule(kelelahan['tinggi'] & durasi['singkat'] & introvert_lvl['introvert'],
-                  recovery['panjang']),
-        ctrl.Rule(kelelahan['tinggi'] & durasi['sedang'],
-                  recovery['panjang']),
-        ctrl.Rule(kelelahan['tinggi'] & durasi['panjang'],
-                  recovery['sangat_panjang']),
-        ctrl.Rule(kelelahan['tinggi'] & tidur['kurang'],
-                  recovery['sangat_panjang']),
-        ctrl.Rule(kelelahan['tinggi'] & mood_awal['buruk'],
-                  recovery['sangat_panjang']),
-        ctrl.Rule(kelelahan['tinggi'] & introvert_lvl['introvert'] & tidur['kurang'],
-                  recovery['sangat_panjang']),
-
-        # Tidur & mood dominan
-        ctrl.Rule(tidur['kurang'] & mood_awal['buruk'] & introvert_lvl['introvert'],
-                  recovery['sangat_panjang']),
-        ctrl.Rule(tidur['lebih'] & mood_awal['baik'] & introvert_lvl['ekstrovert'],
-                  recovery['sangat_singkat']),
-        ctrl.Rule(mood_awal['baik'] & tidur['cukup'] & introvert_lvl['ambivert'],
-                  recovery['singkat']),
-    ]
-
-    system = ctrl.ControlSystem(rules)
-    return ctrl.ControlSystemSimulation(system)
+def trimf(x, a, b, c):
+    """Triangular membership function."""
+    if x <= a or x >= c:
+        return 0.0
+    elif a < x <= b:
+        return (x - a) / (b - a)
+    else:
+        return (c - x) / (c - b)
 
 
-# ── Lazy initialization — build FIS hanya saat pertama kali dipakai ──
-_fis = None
+def trapmf(x, a, b, c, d):
+    """Trapezoidal membership function."""
+    if x <= a or x >= d:
+        return 0.0
+    elif b <= x <= c:
+        return 1.0
+    elif a < x < b:
+        return (x - a) / (b - a)
+    else:
+        return (d - x) / (d - c)
 
-def get_fis():
-    global _fis
-    if _fis is None:
-        _fis = build_fis()
-    return _fis
+
+# ── Membership degrees per variabel ─────────────────────────────
+
+def mf_kelelahan(val):
+    return {
+        'rendah': trapmf(val, 0, 0, 2, 4),
+        'sedang': trimf(val, 3, 5, 7),
+        'tinggi': trapmf(val, 6, 8, 10, 10),
+    }
+
+def mf_durasi(val):
+    return {
+        'singkat': trapmf(val, 0, 0, 1, 2),
+        'sedang':  trimf(val, 1, 3, 6),
+        'panjang': trapmf(val, 5, 7, 12, 12),
+    }
+
+def mf_mood(val):
+    return {
+        'buruk':  trapmf(val, 0, 0, 2, 4),
+        'netral': trimf(val, 3, 5, 7),
+        'baik':   trapmf(val, 6, 8, 10, 10),
+    }
+
+def mf_tidur(val):
+    return {
+        'kurang': trapmf(val, 0, 0, 4, 6),
+        'cukup':  trimf(val, 5, 7, 8.5),
+        'lebih':  trapmf(val, 8, 9, 10, 10),
+    }
+
+def mf_introvert(val):
+    return {
+        'ekstrovert': trapmf(val, 0, 0, 2, 4),
+        'ambivert':   trimf(val, 3, 5, 7),
+        'introvert':  trapmf(val, 6, 8, 10, 10),
+    }
+
+
+def defuzzify_centroid(activation_map, universe):
+    """Defuzzifikasi metode centroid (Mamdani)."""
+    def recovery_mf(label, x):
+        if label == 'sangat_singkat': return trapmf(x, 0, 0, 1, 3)
+        if label == 'singkat':        return trimf(x, 2, 4, 6)
+        if label == 'sedang':         return trimf(x, 5, 8, 11)
+        if label == 'panjang':        return trimf(x, 9, 13, 17)
+        if label == 'sangat_panjang': return trapmf(x, 15, 19, 24, 24)
+        return 0.0
+
+    aggregated = np.zeros_like(universe, dtype=float)
+    for label, strength in activation_map.items():
+        if strength > 0:
+            mf_vals = np.array([recovery_mf(label, x) for x in universe])
+            aggregated = np.maximum(aggregated, np.minimum(strength, mf_vals))
+
+    denom = np.sum(aggregated)
+    if denom == 0:
+        return 8.0  # fallback default
+    return float(np.sum(universe * aggregated) / denom)
 
 
 def run_fis(kelelahan_val, durasi_val, mood_val, tidur_val, introvert_val):
-    fis = get_fis()  # lazy load
+    k = float(np.clip(kelelahan_val, 0, 10))
+    d = float(np.clip(durasi_val,    0, 12))
+    m = float(np.clip(mood_val,      0, 10))
+    t = float(np.clip(tidur_val,     0, 10))
+    i = float(np.clip(introvert_val, 0, 10))
 
-    kelelahan_val  = float(np.clip(kelelahan_val,  0, 10))
-    durasi_val     = float(np.clip(durasi_val,     0, 12))
-    mood_val       = float(np.clip(mood_val,       0, 10))
-    tidur_val      = float(np.clip(tidur_val,      0, 10))
-    introvert_val  = float(np.clip(introvert_val,  0, 10))
+    K = mf_kelelahan(k)
+    D = mf_durasi(d)
+    M = mf_mood(m)
+    T = mf_tidur(t)
+    I = mf_introvert(i)
 
-    fis.input['kelelahan']     = kelelahan_val
-    fis.input['durasi']        = durasi_val
-    fis.input['mood_awal']     = mood_val
-    fis.input['tidur']         = tidur_val
-    fis.input['introvert_lvl'] = introvert_val
-    fis.compute()
+    # Rule activation (AND = min, akumulasi = max)
+    rules = {'sangat_singkat': 0.0, 'singkat': 0.0, 'sedang': 0.0,
+             'panjang': 0.0, 'sangat_panjang': 0.0}
 
-    recovery_hours = round(float(fis.output['recovery']), 1)
-    energy_raw = 100 - (kelelahan_val * 8) - (durasi_val * 1.2) + (tidur_val * 1.5) + (mood_val * 0.8)
+    def fire(output_label, *degrees):
+        rules[output_label] = max(rules[output_label], min(degrees))
+
+    # ── Kelelahan rendah ────────────────────────────────────────
+    fire('sangat_singkat', K['rendah'], D['singkat'], M['baik'])
+    fire('sangat_singkat', K['rendah'], D['singkat'], I['ekstrovert'])
+    fire('singkat',        K['rendah'], D['sedang'],  M['baik'], T['cukup'])
+    fire('singkat',        K['rendah'], D['sedang'],  I['ambivert'])
+    fire('sedang',         K['rendah'], D['panjang'], I['introvert'])
+    fire('sedang',         K['rendah'], M['buruk'])
+    fire('singkat',        K['rendah'], T['kurang'])
+
+    # ── Kelelahan sedang ────────────────────────────────────────
+    fire('singkat',        K['sedang'], D['singkat'], M['baik'])
+    fire('singkat',        K['sedang'], D['singkat'], I['ekstrovert'])
+    fire('sedang',         K['sedang'], D['sedang'],  T['cukup'])
+    fire('panjang',        K['sedang'], D['sedang'],  T['kurang'])
+    fire('panjang',        K['sedang'], D['panjang'], I['introvert'])
+    fire('sangat_panjang', K['sedang'], D['panjang'], M['buruk'])
+    fire('panjang',        K['sedang'], M['buruk'],   T['kurang'])
+    fire('sedang',         K['sedang'], I['ambivert'])
+
+    # ── Kelelahan tinggi ────────────────────────────────────────
+    fire('sedang',         K['tinggi'], D['singkat'], T['lebih'])
+    fire('panjang',        K['tinggi'], D['singkat'], I['introvert'])
+    fire('panjang',        K['tinggi'], D['sedang'])
+    fire('sangat_panjang', K['tinggi'], D['panjang'])
+    fire('sangat_panjang', K['tinggi'], T['kurang'])
+    fire('sangat_panjang', K['tinggi'], M['buruk'])
+    fire('sangat_panjang', K['tinggi'], I['introvert'], T['kurang'])
+
+    # ── Tidur & mood dominan ────────────────────────────────────
+    fire('sangat_panjang', T['kurang'], M['buruk'],  I['introvert'])
+    fire('sangat_singkat', T['lebih'],  M['baik'],   I['ekstrovert'])
+    fire('singkat',        M['baik'],   T['cukup'],  I['ambivert'])
+
+    universe = np.arange(0, 24.1, 0.1)
+    recovery_hours = round(defuzzify_centroid(rules, universe), 1)
+
+    energy_raw = 100 - (k * 8) - (d * 1.2) + (t * 1.5) + (m * 0.8)
     energy_pct = int(np.clip(energy_raw, 5, 95))
+
     return recovery_hours, energy_pct
 
 
 # ════════════════════════════════════════════════════════════════
 #  EXPERT SYSTEM — Identifikasi Jenis Kulit & Skincare
 #  Metode : Forward-chaining rule-based
-#  Input  : jenis kulit, masalah utama, reaksi terhadap produk
-#  Output : diagnosis + rutinitas pagi/malam + bahan aktif
 # ════════════════════════════════════════════════════════════════
 
 KNOWLEDGE_BASE = [
@@ -248,7 +253,6 @@ KNOWLEDGE_BASE = [
 
 
 def forward_chain(main, concern, reaction):
-    """Forward-chaining: evaluasi rule dari atas ke bawah, return match pertama."""
     for rule in KNOWLEDGE_BASE:
         if rule["cond"](main, concern, reaction):
             return {k: v for k, v in rule.items() if k not in ("id", "cond")}
